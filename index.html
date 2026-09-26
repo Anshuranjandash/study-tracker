@@ -74,7 +74,9 @@
                         </div>
                     </div>
                     <div class="flex justify-between items-center pt-1 text-xs">
-                        <span class="text-slate-600 font-semibold">Kavach Shield: <strong id="anshuKavach" class="text-blue-600">🛡️ 3</strong></span>
+                        <div>
+                            <span class="text-slate-600 font-semibold cursor-pointer hover:underline text-blue-900" onclick="showKavachHistory('anshu')" title="Click to view Kavach usage history">Kavach Shield: <strong id="anshuKavach" class="text-blue-600">🛡️ 3</strong></span> <span id="anshuActivatedBadge" class="hidden text-[10px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded ml-1">Activated</span>
+                        </div>
                         <div class="flex items-center gap-1.5">
                             <button onclick="useKavach('anshu')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
                             <button onclick="buyKavach('anshu')" class="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-100 transition">Buy (300c)</button>
@@ -105,7 +107,9 @@
                         </div>
                     </div>
                     <div class="flex justify-between items-center pt-1 text-xs">
-                        <span class="text-slate-600 font-semibold">Kavach Shield: <strong id="aasthaKavach" class="text-blue-600">🛡️ 3</strong></span>
+                        <div>
+                            <span class="text-slate-600 font-semibold cursor-pointer hover:underline text-blue-900" onclick="showKavachHistory('aastha')" title="Click to view Kavach usage history">Kavach Shield: <strong id="aasthaKavach" class="text-blue-600">🛡️ 4</strong></span> <span id="aasthaActivatedBadge" class="hidden text-[10px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded ml-1">Activated</span>
+                        </div>
                         <div class="flex items-center gap-1.5">
                             <button onclick="useKavach('aastha')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
                             <button onclick="buyKavach('aastha')" class="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-100 transition">Buy (300c)</button>
@@ -375,6 +379,19 @@
 
     </div>
 
+    <!-- KAVACH HISTORY MODAL -->
+    <div id="kavachHistoryModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-amber-200 space-y-4">
+            <h3 id="kavachHistoryTitle" class="font-extrabold text-blue-900 text-lg flex items-center gap-2">
+                🛡️ Kavach Usage History
+            </h3>
+            <div id="kavachHistoryContent" class="space-y-2 text-xs text-slate-700 max-h-60 overflow-y-auto"></div>
+            <div class="text-right pt-2">
+                <button onclick="toggleKavachHistoryModal()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- RULES & REWARDS MODAL -->
     <div id="economyModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-amber-200 space-y-4 max-h-[85vh] overflow-y-auto">
@@ -597,8 +614,6 @@
                     anshu: [],
                     aastha: []
                 };
-            } else {
-                db._weekly[weekKey].anshu = [];
             }
             return db._weekly[weekKey];
         }
@@ -650,9 +665,53 @@
             loadDayUI();
         }
 
+        function toggleKavachHistoryModal() {
+            document.getElementById('kavachHistoryModal').classList.toggle('hidden');
+        }
+
+        function showKavachHistory(person) {
+            const db = getDB();
+            let historyDates = [];
+            Object.keys(db).forEach(k => {
+                if (!k.startsWith('_')) {
+                    if (db[k][person] && db[k][person].kavachUsed) {
+                        historyDates.push(k);
+                    }
+                }
+            });
+            historyDates.sort().reverse();
+
+            const contentEl = document.getElementById('kavachHistoryContent');
+            document.getElementById('kavachHistoryTitle').innerText = `🛡️ ${person.toUpperCase()} — Kavach Shield History`;
+
+            if (historyDates.length === 0) {
+                contentEl.innerHTML = `<p class="italic text-gray-500 py-3 text-center">No Kavach shields have been deployed yet.</p>`;
+            } else {
+                contentEl.innerHTML = historyDates.map(date => `
+                    <div class="bg-blue-50 p-2.5 rounded-xl border border-blue-200 flex justify-between items-center">
+                        <span class="font-bold text-blue-900">📅 Date: ${date}</span>
+                        <span class="bg-blue-200 text-blue-900 font-bold px-2 py-0.5 rounded text-[10px]">🛡️ Shield Deployed</span>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('kavachHistoryModal').classList.remove('hidden');
+        }
+
         function loadDayUI() {
             const selectedDate = document.getElementById('activeDate').value;
             const dayData = getDayData(selectedDate);
+
+            // Update Activated badge for active date
+            ['anshu', 'aastha'].forEach(p => {
+                const badge = document.getElementById(`${p}ActivatedBadge`);
+                if (badge) {
+                    if (dayData[p] && dayData[p].kavachUsed) {
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            });
 
             const aH = dayData.anshu.hours || 0;
             const aIntH = Math.floor(aH);
@@ -969,8 +1028,8 @@
         function calculateAndRenderEconomy() {
             const db = getDB();
             let wallet = db._wallet || {
-                anshu: { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 0 },
-                aastha: { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 0 }
+                anshu: { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 1 },
+                aastha: { coinsSpent: 0, kavach: 4, kavachBought: 0, kavachSpent: 0 }
             };
 
             const sortedDates = Object.keys(db).filter(k => !k.startsWith('_')).sort();
@@ -994,7 +1053,7 @@
                         let day2Obj = db[sortedDates[i+1]][person] || { hours: 0 };
                         let h1 = day1Obj.hours || 0;
                         let h2 = day2Obj.hours || 0;
-                        if ((h1 + h2) >= targetTotal2Days || day1Obj.kavachUsed || day2Obj.kavachUsed) {
+                        if ((h1 + h2) >= targetTotal2Days) {
                             consecutiveKavachEarned++;
                             i++; // non-overlapping pairs
                         }
@@ -1017,10 +1076,10 @@
                     }
                 }
 
-                if (!wallet[person]) wallet[person] = { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 0 };
-                let baseKavach = 3;
+                if (!wallet[person]) wallet[person] = { coinsSpent: 0, kavach: person === 'anshu' ? 3 : 4, kavachBought: 0, kavachSpent: person === 'anshu' ? 1 : 0 };
+                let baseKavach = 4;
                 let boughtKavach = wallet[person].kavachBought || 0;
-                let spentKavach = wallet[person].kavachSpent || 0;
+                let spentKavach = wallet[person].kavachSpent || (person === 'anshu' ? 1 : 0);
                 let totalKavach = baseKavach + consecutiveKavachEarned + boughtKavach - spentKavach;
                 if (totalKavach < 0) totalKavach = 0;
                 wallet[person].kavach = totalKavach;
@@ -1054,6 +1113,9 @@
                 let activeHourStreak = calculateSimpleStreak(db, person, reqHour, false);
                 let activeTargetStreak = calculateTargetStreakSimple(db, person, false);
 
+                // Milestone board streaks respect Kavach
+                let milestoneTargetStreak = calculateTargetStreakSimple(db, person, true);
+
                 let target4h = person === 'anshu' ? 4 : 6;
                 let target5h = person === 'anshu' ? 5 : 7;
 
@@ -1080,7 +1142,7 @@
                     tierClass = "bg-purple-100 text-purple-900 border border-purple-300";
                 } else if (netCoins >= 8001) {
                     tierName = "🎖️ Joint Secretary";
-                    tierClass = "bg-emerald-100 text-emerald-800 border border-emerald-300";
+                    tierClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
                 } else if (netCoins >= 6001) {
                     tierName = "🥇 DM (Collector)";
                     tierClass = "bg-yellow-100 text-yellow-900 border border-yellow-300";
@@ -1106,7 +1168,7 @@
                 let s15_1 = Math.min(streak7d_45, 15);
                 let s15_2 = Math.min(streak7d_57, 15);
                 let s30_1 = Math.min(streak7d_45, 30);
-                let t10 = Math.min(activeTargetStreak, 10);
+                let t10 = Math.min(milestoneTargetStreak, 10);
 
                 const boardEl = document.getElementById(`${person}StreaksBoard`);
                 let bHtml = `
@@ -1175,7 +1237,7 @@
             }
 
             const db = getDB();
-            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 3, coinsSpent: 0 } };
+            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 4, coinsSpent: 0 } };
 
             if ((db._wallet[person].kavach || 3) <= 0) {
                 alert(`❌ No Kavach shields available for ${person.toUpperCase()}.`);
@@ -1197,7 +1259,7 @@
                 return;
             }
             const db = getDB();
-            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 3, coinsSpent: 0 } };
+            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 4, coinsSpent: 0 } };
 
             let netCoins = parseInt(document.getElementById(`${person}Coins`).innerText) || 0;
             if (netCoins < 300) {
@@ -1565,7 +1627,7 @@
             if (!confirm("Are you sure you want to download the summary card image?")) return;
             const cardElement = document.getElementById('shareableCard');
             html2canvas(cardElement, { scale: 3, useCORS: true }).then(canvas => {
-                let link = document.createElement('a');
+                const link = document.createElement('a');
                 link.download = `Study-Progress-Report-${document.getElementById('summaryCardDate').value}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
