@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Study Tracker & Sankalp Economy</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gradient-to-br from-amber-50 to-orange-50 min-h-screen text-slate-800 p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl p-6 md:p-10 border border-amber-200">
+        
+        <!-- HEADER WITH MANTRA -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-extrabold text-amber-900 tracking-wide mb-1">॥ श्री गणेशाय नमः ॥</h1>
+            <p class="text-sm text-amber-700 font-semibold">Real-Time Cloud Synced Daily Study Tracker & Sankalp Economy</p>
+        </div>
+
+        <!-- ACCESS CONTROL & STATUS BAR -->
+        <div class="mb-6 bg-amber-100/70 p-4 rounded-2xl border border-amber-300 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm">
+            <div id="syncStatusBanner" class="text-xs font-bold text-slate-700">
+                🔄 Connecting...
+            </div>
+            <div class="flex items-center gap-2">
+                <div id="roleBadge" class="text-xs font-extrabold px-3 py-1.5 rounded-xl bg-blue-100 text-blue-800 border border-blue-200">
+                    👀 Viewer Mode (Read-Only)
+                </div>
+                <button id="authToggleBtn" onclick="toggleEditorAuth()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold shadow transition">
+                    🔐 Editor Login
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION: SANKALP COIN WALLET, RANKS & KAVACH -->
+        <div class="mb-6 bg-gradient-to-r from-amber-100/90 via-orange-100/70 to-amber-100/90 p-5 rounded-2xl border-2 border-amber-300 shadow-sm">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-base font-extrabold text-amber-950 flex items-center gap-2">
+                    🪙 Sankalp Coin Wallet & Bureaucratic Ranks
+                </h2>
+                <button onclick="toggleEconomyModal()" class="text-xs font-bold text-amber-800 bg-white/80 hover:bg-white px-2.5 py-1 rounded-lg border border-amber-300 shadow-xs transition">
+                    📜 Rules & Rewards Guide
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- ANSHU WALLET -->
+                <div class="bg-white/95 p-4 rounded-xl border border-indigo-200 shadow-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-extrabold text-indigo-800 text-sm">ANSHU</p>
+                            <span id="anshuTier" class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-gray-100 text-gray-700">Aspirant</span>
+                        </div>
+                        <div class="text-right">
+                            <span id="anshuCoins" class="text-xl font-black text-amber-600">0</span>
+                            <span class="text-xs font-bold text-amber-800">Coins</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs font-medium">
+                        <div class="bg-indigo-50/60 p-2 rounded-lg">
+                            <span class="text-slate-500 block text-[10px]">HOUR STREAK (≥3.5h)</span>
+                            <strong id="anshuHourStreak" class="text-indigo-900 text-sm">0 days</strong>
+                        </div>
+                        <div class="bg-indigo-50/60 p-2 rounded-lg">
+                            <span class="text-slate-500 block text-[10px]">TARGET STREAK</span>
+                            <strong id="anshuTargetStreak" class="text-indigo-900 text-sm">0 days</strong>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 text-xs">
+                        <span class="text-slate-600 font-semibold">Kavach Shield: <strong id="anshuKavach" class="text-blue-600">🛡️ 3</strong></span>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="useKavach('anshu')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
+                            <button onclick="buyKavach('anshu')" class="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-100 transition">Buy (300c)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AASTHA WALLET -->
+                <div class="bg-white/95 p-4 rounded-xl border border-rose-200 shadow-xs space-y-2">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-extrabold text-rose-800 text-sm">AASTHA</p>
+                            <span id="aasthaTier" class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-gray-100 text-gray-700">Aspirant</span>
+                        </div>
+                        <div class="text-right">
+                            <span id="aasthaCoins" class="text-xl font-black text-amber-600">0</span>
+                            <span class="text-xs font-bold text-amber-800">Coins</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs font-medium">
+                        <div class="bg-rose-50/60 p-2 rounded-lg">
+                            <span class="text-slate-500 block text-[10px]">HOUR STREAK (≥5h)</span>
+                            <strong id="aasthaHourStreak" class="text-rose-900 text-sm">0 days</strong>
+                        </div>
+                        <div class="bg-rose-50/60 p-2 rounded-lg">
+                            <span class="text-slate-500 block text-[10px]">TARGET STREAK</span>
+                            <strong id="aasthaTargetStreak" class="text-rose-900 text-sm">0 days</strong>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 text-xs">
+                        <span class="text-slate-600 font-semibold">Kavach Shield: <strong id="aasthaKavach" class="text-blue-600">🛡️ 3</strong></span>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="useKavach('aastha')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
+                            <button onclick="buyKavach('aastha')" class="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-100 transition">Buy (300c)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATE SELECTOR -->
+        <div class="mb-6 bg-amber-50 p-4 rounded-2xl border border-amber-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <label for="activeDate" class="text-sm font-bold text-amber-900">Active Date:</label>
+                <input type="date" id="activeDate" onchange="changeActiveDate()" class="bg-white border border-amber-400 rounded-xl px-3 py-1.5 text-sm font-semibold shadow-sm focus:outline-none">
+            </div>
+            <div id="editableStatusBanner" class="text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm"></div>
+        </div>
+
+        <!-- SECTION 1: TODAY'S TARGET & STUDY HOURS -->
+        <div class="mb-8 bg-amber-50/70 p-5 rounded-2xl border border-amber-200">
+            <h2 class="text-lg font-extrabold text-amber-900 mb-4 flex items-center gap-2">🎯 Daily Targets & Study Hours</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- ANSHU'S PANEL -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-indigo-100 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-indigo-700 text-base">ANSHU</h3>
+                        <span id="anshuPercentage" class="bg-indigo-100 text-indigo-800 text-xs font-extrabold px-3 py-1 rounded-full">0% Completed</span>
+                    </div>
+
+                    <div class="mb-4 bg-indigo-50/50 p-2.5 rounded-lg border border-indigo-100 flex justify-between items-center">
+                        <label class="text-xs font-bold text-indigo-900">Study Hours Today:</label>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="anshuH" min="0" max="15" placeholder="0" oninput="updateStudyHours('anshu')" class="w-12 text-center text-sm font-bold border border-indigo-300 rounded-lg p-1 bg-white focus:outline-none">
+                            <span class="text-xs font-semibold text-indigo-700">h</span>
+                            <input type="number" id="anshuM" min="0" max="59" step="5" placeholder="0" oninput="updateStudyHours('anshu')" class="w-12 text-center text-sm font-bold border border-indigo-300 rounded-lg p-1 bg-white focus:outline-none">
+                            <span class="text-xs font-semibold text-indigo-700">m</span>
+                        </div>
+                    </div>
+
+                    <table class="w-full text-left text-sm mb-3">
+                        <thead>
+                            <tr class="border-b border-gray-200 text-gray-500 text-xs">
+                                <th class="pb-2">Subject / Topic</th>
+                                <th class="pb-2 w-32">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="anshuTableBody"></tbody>
+                    </table>
+                    <div id="anshuInputContainer" class="flex gap-2">
+                        <input type="text" id="anshuInput" placeholder="Add topic..." class="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
+                        <button onclick="addTopic('anshu')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-bold shadow transition">+</button>
+                    </div>
+                </div>
+
+                <!-- AASTHA'S PANEL -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-rose-100 relative">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-rose-700 text-base">AASTHA</h3>
+                        <span id="aasthaPercentage" class="bg-rose-100 text-rose-800 text-xs font-extrabold px-3 py-1 rounded-full">0% Completed</span>
+                    </div>
+
+                    <div class="mb-4 bg-rose-50/50 p-2.5 rounded-lg border border-rose-100 flex justify-between items-center">
+                        <label class="text-xs font-bold text-rose-900">Study Hours Today:</label>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="aasthaH" min="0" max="15" placeholder="0" oninput="updateStudyHours('aastha')" class="w-12 text-center text-sm font-bold border border-rose-300 rounded-lg p-1 bg-white focus:outline-none">
+                            <span class="text-xs font-semibold text-rose-700">h</span>
+                            <input type="number" id="aasthaM" min="0" max="59" step="5" placeholder="0" oninput="updateStudyHours('aastha')" class="w-12 text-center text-sm font-bold border border-rose-300 rounded-lg p-1 bg-white focus:outline-none">
+                            <span class="text-xs font-semibold text-rose-700">m</span>
+                        </div>
+                    </div>
+
+                    <table class="w-full text-left text-sm mb-3">
+                        <thead>
+                            <tr class="border-b border-gray-200 text-gray-500 text-xs">
+                                <th class="pb-2">Subject / Topic</th>
+                                <th class="pb-2 w-32">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="aasthaTableBody"></tbody>
+                    </table>
+                    <div id="aasthaInputContainer" class="flex gap-2">
+                        <input type="text" id="aasthaInput" placeholder="Add topic..." class="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:border-rose-500">
+                        <button onclick="addTopic('aastha')" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-bold shadow transition">+</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 2: STUDY TIME GRAPH -->
+        <div class="mb-8 bg-white p-5 rounded-2xl border border-amber-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
+                <h2 class="text-lg font-extrabold text-amber-900">📈 Study Time Graph</h2>
+                <div class="flex items-center gap-3">
+                    <div id="graphTotals" class="text-xs font-bold text-amber-900 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-300 shadow-sm">
+                        Total — Anshu: 0 hrs | Aastha: 0 hrs
+                    </div>
+                    <select id="graphViewToggle" onchange="renderGraph()" class="bg-amber-50 border border-amber-300 rounded-xl px-3 py-1.5 text-sm font-bold text-amber-900 focus:outline-none shadow-sm">
+                        <option value="weekly">Weekly (Sun - Sat)</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="relative h-80 w-full">
+                <canvas id="studyTimeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- SECTION 3: HISTORICAL TARGET COMPLETION -->
+        <div class="mb-8 bg-amber-50/70 p-5 rounded-2xl border border-amber-200">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
+                <h2 class="text-lg font-extrabold text-amber-900">📊 Historical Target Achievement</h2>
+                <select id="tableDataToggle" onchange="switchDataTable()" class="bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-sm font-bold text-amber-900 shadow-sm">
+                    <option value="weekly">Weekly Breakdown (With Exact Dates)</option>
+                    <option value="monthly">Monthly Breakdown (With Date Ranges)</option>
+                </select>
+            </div>
+
+            <div id="weeklyTableContainer" class="overflow-x-auto">
+                <table class="w-full text-center border-collapse bg-white rounded-xl shadow-sm text-sm overflow-hidden">
+                    <thead>
+                        <tr id="weeklyTableHeader" class="bg-amber-200/70 text-amber-900 font-bold text-xs"></tr>
+                    </thead>
+                    <tbody id="weeklyTableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="monthlyTableContainer" class="overflow-x-auto hidden">
+                <table class="w-full text-center border-collapse bg-white rounded-xl shadow-sm text-sm overflow-hidden">
+                    <thead>
+                        <tr id="monthlyTableHeader" class="bg-amber-200/70 text-amber-900 font-bold text-xs"></tr>
+                    </thead>
+                    <tbody id="monthlyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 4: MILESTONE BOARD -->
+        <div class="mb-8 bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4">
+            <h2 class="text-lg font-extrabold text-amber-900 flex items-center gap-2">🎯 Milestone Board</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- ANSHU STREAKS -->
+                <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3">
+                    <p class="font-extrabold text-indigo-900 text-sm border-b border-indigo-200 pb-1">Anshu's Milestone Board</p>
+                    <div id="anshuStreaksBoard" class="grid grid-cols-2 gap-2 text-xs"></div>
+                </div>
+
+                <!-- AASTHA STREAKS -->
+                <div class="bg-rose-50/70 p-4 rounded-xl border border-rose-200 space-y-3">
+                    <p class="font-extrabold text-rose-900 text-sm border-b border-rose-200 pb-1">Aastha's Milestone Board</p>
+                    <div id="aasthaStreaksBoard" class="grid grid-cols-2 gap-2 text-xs"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: WEEKLY TARGET GOALS BOX (2ND LAST BOX) -->
+        <div class="mb-8 bg-amber-50/70 p-5 rounded-2xl border border-amber-200 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-lg font-extrabold text-amber-900">📅 Weekly Target Goals</h2>
+                    <span id="weeklyDateRangeDisplay" class="text-xs bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-amber-900">Month & Week:</label>
+                    <select id="weekSelector" onchange="switchSelectedWeek()" class="bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-900 shadow-sm"></select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- ANSHU WEEKLY -->
+                <div class="bg-white p-4 rounded-xl border border-indigo-100 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-indigo-700 text-sm">ANSHU — Weekly Goals</h3>
+                        <span id="anshuWeeklyPercent" class="text-xs font-extrabold text-indigo-900 bg-indigo-50 px-2.5 py-0.5 rounded-full">0% Done</span>
+                    </div>
+                    <table class="w-full text-left text-sm">
+                        <tbody id="anshuWeeklyTableBody"></tbody>
+                    </table>
+                    <div id="anshuWeeklyInputContainer" class="flex gap-2">
+                        <input type="text" id="anshuWeeklyInput" placeholder="Add goal (upload future weeks)..." class="flex-1 text-xs border rounded-lg px-2.5 py-1.5 focus:outline-none">
+                        <button onclick="addWeeklyTarget('anshu')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+</button>
+                    </div>
+                </div>
+
+                <!-- AASTHA WEEKLY -->
+                <div class="bg-white p-4 rounded-xl border border-rose-100 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-rose-700 text-sm">AASTHA — Weekly Goals</h3>
+                        <span id="aasthaWeeklyPercent" class="text-xs font-extrabold text-rose-900 bg-rose-50 px-2.5 py-0.5 rounded-full">0% Done</span>
+                    </div>
+                    <table class="w-full text-left text-sm">
+                        <tbody id="aasthaWeeklyTableBody"></tbody>
+                    </table>
+                    <div id="aasthaWeeklyInputContainer" class="flex gap-2">
+                        <input type="text" id="aasthaWeeklyInput" placeholder="Add goal (upload future weeks)..." class="flex-1 text-xs border rounded-lg px-2.5 py-1.5 focus:outline-none">
+                        <button onclick="addWeeklyTarget('aastha')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: FINAL SUMMARY CARD & WHATSAPP SHAREABLE -->
+        <div class="mt-10 pt-6 border-t-2 border-dashed border-amber-300 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-100/50 p-4 rounded-2xl border border-amber-300">
+                <div class="flex items-center gap-3">
+                    <label for="summaryCardDate" class="text-sm font-extrabold text-amber-900">Select Date for Card:</label>
+                    <input type="date" id="summaryCardDate" onchange="updateSummaryCardPreview()" class="bg-white border border-amber-400 rounded-xl px-3 py-1.5 text-sm font-bold shadow-sm focus:outline-none">
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="copyWhatsAppText()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-md transition flex items-center gap-1.5">
+                        📋 Copy WhatsApp Text
+                    </button>
+                    <button onclick="downloadCard()" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-md transition flex items-center gap-1.5">
+                        📥 Download Image
+                    </button>
+                </div>
+            </div>
+
+            <div id="shareableCard" class="bg-gradient-to-br from-white via-amber-50/30 to-orange-50/40 p-8 rounded-3xl border-4 border-amber-400 shadow-xl max-w-xl mx-auto relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-200/30 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-200/30 rounded-full blur-2xl"></div>
+
+                <div class="text-center mb-6 relative z-10">
+                    <h3 class="font-extrabold text-amber-900 text-xl tracking-wide mb-1">॥ श्री गणेशाय नमः ॥</h3>
+                    <p class="text-xs font-bold text-amber-800 tracking-wide">Daily Progress & Study Report</p>
+                    <p id="cardDateDisplay" class="text-xs text-slate-500 font-semibold mt-1"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6 relative z-10 text-sm">
+                    <div class="bg-white/90 backdrop-blur p-4 rounded-2xl border-2 border-indigo-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-extrabold text-indigo-800">Anshu</h4>
+                            <span id="cardAnshuHours" class="text-xs bg-indigo-100 text-indigo-900 font-extrabold px-2 py-0.5 rounded-md">0 hrs</span>
+                        </div>
+                        <div class="text-xs text-slate-700 space-y-1 mb-2">
+                            <p id="cardAnshuCompletion" class="font-bold text-indigo-900">0% Achieved</p>
+                        </div>
+                        <div id="cardAnshuDetails" class="text-xs text-slate-700 space-y-1 border-t border-indigo-100 pt-2 font-medium">
+                            <span class="italic text-[11px] text-slate-400">No data recorded</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/90 backdrop-blur p-4 rounded-2xl border-2 border-rose-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-extrabold text-rose-800">Aastha</h4>
+                            <span id="cardAasthaHours" class="text-xs bg-rose-100 text-rose-900 font-extrabold px-2 py-0.5 rounded-md">0 hrs</span>
+                        </div>
+                        <div class="text-xs text-slate-700 space-y-1 mb-2">
+                            <p id="cardAasthaCompletion" class="font-bold text-rose-900">0% Achieved</p>
+                        </div>
+                        <div id="cardAasthaDetails" class="text-xs text-slate-700 space-y-1 border-t border-rose-100 pt-2 font-medium">
+                            <span class="italic text-[11px] text-slate-400">No data recorded</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-amber-900 font-bold bg-amber-200/50 py-2.5 rounded-xl border border-amber-300 relative z-10 shadow-inner">
+                    ✨ Consistency is the root of all success. Keep going! ✨
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RULES & REWARDS MODAL -->
+    <div id="economyModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-amber-200 space-y-4 max-h-[85vh] overflow-y-auto">
+            <h3 class="font-extrabold text-amber-900 text-lg flex items-center gap-2">
+                📜 Sankalp Economy & Rules Guide
+            </h3>
+            
+            <div class="space-y-3 text-xs text-slate-700">
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
+                    <p class="font-bold text-amber-900 mb-1">⏱️ Hourly & Target Coins:</p>
+                    <ul class="list-disc pl-5 space-y-0.5">
+                        <li>3 hrs = <b>10 coins</b> | 5 hrs = <b>20 coins</b></li>
+                        <li><b>Anshu:</b> 6 hrs = <b>50 coins</b> | 7 hrs = <b>100 coins</b></li>
+                        <li><b>Aastha:</b> 7 hrs = <b>50 coins</b> | 8 hrs = <b>100 coins</b></li>
+                        <li>100% Daily Target Met = <b>+20 coins</b></li>
+                        <li>Weekly 80%+ = <b>50 coins</b> | 90%+ = <b>150 coins</b> | 100% = <b>300 coins</b></li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2">
+                    <p class="font-bold text-blue-900 mb-1">🛡️ Kavach Shield Rules:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><b>How to Buy:</b> Spend <b>300 Sankalp Coins</b> to buy 1 shield instantly.</li>
+                        <li><b>How to Earn Free Shields:</b> Study 2 consecutive days with a combined total of <b>11+ hours</b> (Anshu) or <b>14+ hours</b> (Aastha) to earn <b>+1 Shield</b>.</li>
+                        <li><b>Back-date Usage:</b> If you forgot to apply a shield yesterday, you can still apply it to Yesterday or Today within the 48-hour window.</li>
+                        <li><b>Security:</b> Requires your PIN (1234) to use.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-emerald-50 p-3 rounded-xl border border-amber-900">
+                    <p class="font-bold text-amber-900 mb-1">🎖️ Bureaucratic Ranks (Tiers):</p>
+                    <ul class="list-disc pl-5 space-y-0.5">
+                        <li><b>0 - 1,000 Coins:</b> Aspirant</li>
+                        <li>🥉 <b>1,001 - 3,000 Coins:</b> LBSNAA Trainee</li>
+                        <li>🥈 <b>3,001 - 6,000 Coins:</b> SDM</li>
+                        <li>🥇 <b>6,001 - 8,000 Coins:</b> DM</li>
+                        <li>🎖️ <b>8,001 - 10,000 Coins:</b> Joint Secretary</li>
+                        <li>💎 <b>10,000+ Coins:</b> Cabinet Secretary</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-right pt-2">
+                <button onclick="toggleEconomyModal()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-ZrxFXclLF6oLEQqBBv2t8uMSuP9ha5M",
+            authDomain: "studytracker-c9f6c.firebaseapp.com",
+            databaseURL: "https://studytracker-c9f6c-default-rtdb.firebaseio.com",
+            projectId: "studytracker-c9f6c",
+            storageBucket: "studytracker-c9f6c.firebasestorage.app",
+            messagingSenderId: "421352927878",
+            appId: "1:421352927878:web:31a403317e8a6e3ef9d707"
+        };
+
+        let dbRef = null;
+        let cloudMode = false;
+        let globalDB = {};
+        let isEditor = false;
+        const DEFAULT_PIN = "1234";
+
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                dbRef = firebase.database().ref('studyTrackerData');
+                cloudMode = true;
+                document.getElementById('syncStatusBanner').innerText = "🟢 Cloud Database Connected (Live Multi-User Sync)";
+            } catch (e) {
+                document.getElementById('syncStatusBanner').innerText = "⚠️ Firebase Connection Error";
+            }
+        }
+
+        function getDB() {
+            if (cloudMode) return globalDB;
+            const data = localStorage.getItem('studyTrackerDB');
+            if (data) {
+                return JSON.parse(data);
+            } else {
+                const initialDB = {
+                    "2026-09-22": {
+                        anshu: {
+                            hours: 4.32,
+                            topics: [
+                                { name: "Sociology - Class 15 Lecture", status: "Completed" },
+                                { name: "USA Iran Conflict CA", status: "Completed" },
+                                { name: "Supreme Court - PYQ + Flashcard", status: "Completed" },
+                                { name: "Judicial Review", status: "Completed" }
+                            ]
+                        },
+                        aastha: {
+                            hours: 6.25,
+                            topics: [
+                                { name: "Sociology lecture", status: "Completed" },
+                                { name: "Mathematics lecture+practice", status: "Completed" },
+                                { name: "English grammar revision", status: "Pending" },
+                                { name: "History early medieval", status: "Completed" }
+                            ]
+                        }
+                    }
+                };
+                localStorage.setItem('studyTrackerDB', JSON.stringify(initialDB));
+                return initialDB;
+            }
+        }
+
+        function saveDB(db) {
+            globalDB = db;
+            if (cloudMode) {
+                dbRef.set(db);
+            } else {
+                localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+            }
+            refreshUI();
+        }
+
+        if (cloudMode) {
+            dbRef.on('value', (snapshot) => {
+                globalDB = snapshot.val() || {};
+                refreshUI();
+            });
+        } else {
+            globalDB = getDB();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!cloudMode) {
+                let db = getDB();
+                if (!db["2026-09-22"]) db["2026-09-22"] = {};
+                db["2026-09-22"].anshu = {
+                    hours: 4.32,
+                    topics: [
+                        { name: "Sociology - Class 15 Lecture", status: "Completed" },
+                        { name: "USA Iran Conflict CA", status: "Completed" },
+                        { name: "Supreme Court - PYQ + Flashcard", status: "Completed" },
+                        { name: "Judicial Review", status: "Completed" }
+                    ]
+                };
+                localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+                globalDB = db;
+            }
+            loadDayUI();
+        });
+
+        function toggleEditorAuth() {
+            if (isEditor) {
+                if (!confirm("Are you sure you want to log out of Editor Mode?")) return;
+                isEditor = false;
+                updateAuthUI();
+                alert("🔒 Logged out of Editor Mode.");
+            } else {
+                const pin = prompt("Enter Editor Passcode to unlock editing:");
+                if (pin === DEFAULT_PIN) {
+                    isEditor = true;
+                    updateAuthUI();
+                    alert("🔓 Editor Mode Unlocked!");
+                } else if (pin !== null) {
+                    alert("❌ Incorrect Passcode.");
+                }
+            }
+            changeActiveDate();
+        }
+
+        function updateAuthUI() {
+            const badge = document.getElementById('roleBadge');
+            const btn = document.getElementById('authToggleBtn');
+            if (isEditor) {
+                badge.innerText = "✏️ Editor Mode Active";
+                badge.className = "text-xs font-extrabold px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-200";
+                btn.innerText = "🔒 Logout Editor";
+                btn.className = "bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold shadow transition";
+            } else {
+                badge.innerText = "👀 Viewer Mode (Read-Only)";
+                badge.className = "text-xs font-extrabold px-3 py-1.5 rounded-xl bg-blue-100 text-blue-800 border border-blue-200";
+                btn.innerText = "🔐 Editor Login";
+                btn.className = "bg-amber-600 hover:bg-amber-700 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold shadow transition";
+            }
+        }
+
+        function getLocalDateString(d = new Date()) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        const todayStr = getLocalDateString();
+        const yesterdayObj = new Date();
+        yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+        const yesterdayStr = getLocalDateString(yesterdayObj);
+
+        document.getElementById('activeDate').value = todayStr;
+        document.getElementById('summaryCardDate').value = todayStr;
+
+        function getWeekKey(d = new Date()) {
+            let date = new Date(d);
+            let day = date.getDay();
+            let diff = date.getDate() - day; // Sunday start
+            let sunday = new Date(date.setDate(diff));
+            return sunday.toISOString().split('T')[0];
+        }
+
+        function getWeekRangeFormatted(weekKey) {
+            let start = new Date(weekKey);
+            let end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            let monthName = start.toLocaleString('default', { month: 'long' });
+            return `${monthName} (${start.toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${end.toLocaleDateString('en-US', {month:'short', day:'numeric'})})`;
+        }
+
+        function getWeeklyData(weekKey) {
+            const db = getDB();
+            if (!db._weekly) db._weekly = {};
+            if (!db._weekly[weekKey]) {
+                db._weekly[weekKey] = {
+                    anshu: [],
+                    aastha: []
+                };
+            } else {
+                db._weekly[weekKey].anshu = [];
+            }
+            return db._weekly[weekKey];
+        }
+
+        function getDayData(dateStr) {
+            const db = getDB();
+            if (!db[dateStr]) {
+                db[dateStr] = {
+                    anshu: { hours: 0, topics: [] },
+                    aastha: { hours: 0, topics: [] }
+                };
+            }
+            if (!db[dateStr].anshu) db[dateStr].anshu = { hours: 0, topics: [] };
+            if (!db[dateStr].anshu.topics) db[dateStr].anshu.topics = [];
+            if (!db[dateStr].aastha) db[dateStr].aastha = { hours: 0, topics: [] };
+            if (!db[dateStr].aastha.topics) db[dateStr].aastha.topics = [];
+            
+            return db[dateStr];
+        }
+
+        function changeActiveDate() {
+            const selectedDate = document.getElementById('activeDate').value;
+            const banner = document.getElementById('editableStatusBanner');
+            const anshuInputContainer = document.getElementById('anshuInputContainer');
+            const aasthaInputContainer = document.getElementById('aasthaInputContainer');
+            const anshuHoursInput = document.getElementById('anshuH');
+            const aasthaHoursInput = document.getElementById('aasthaH');
+
+            const canEdit = isEditor && (selectedDate === todayStr || selectedDate === yesterdayStr);
+
+            if (!isEditor) {
+                banner.innerText = "👀 Viewer Mode: Read-Only Access";
+                banner.className = "text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm bg-blue-100 text-blue-800 border border-blue-200";
+            } else if (selectedDate !== todayStr && selectedDate !== yesterdayStr) {
+                banner.innerText = "🔒 Historical View (Read-Only)";
+                banner.className = "text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm bg-red-100 text-red-800 border border-red-200";
+            } else {
+                banner.innerText = "✍️ Live Editing Enabled (Today & Yesterday)";
+                banner.className = "text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm bg-emerald-100 text-emerald-800 border border-emerald-200";
+            }
+
+            anshuInputContainer.style.display = canEdit ? 'flex' : 'none';
+            aasthaInputContainer.style.display = canEdit ? 'flex' : 'none';
+            anshuH.disabled = !canEdit;
+            anshuM.disabled = !canEdit;
+            aasthaH.disabled = !canEdit;
+            aasthaM.disabled = !canEdit;
+
+            loadDayUI();
+        }
+
+        function loadDayUI() {
+            const selectedDate = document.getElementById('activeDate').value;
+            const dayData = getDayData(selectedDate);
+
+            const aH = dayData.anshu.hours || 0;
+            const aIntH = Math.floor(aH);
+            const aIntM = Math.round((aH - aIntH) * 60);
+            document.getElementById('anshuH').value = aIntH > 0 ? aIntH : '';
+            document.getElementById('anshuM').value = aIntM > 0 ? aIntM : '';
+
+            const aaH = dayData.aastha.hours || 0;
+            const aaIntH = Math.floor(aaH);
+            const aaIntM = Math.round((aaH - aaIntH) * 60);
+            document.getElementById('aasthaH').value = aaIntH > 0 ? aaIntH : '';
+            document.getElementById('aasthaM').value = aaIntM > 0 ? aaIntM : '';
+
+            renderPersonTable('anshu', dayData.anshu.topics);
+            renderPersonTable('aastha', dayData.aastha.topics);
+            populateWeekSelector();
+            renderWeeklyTargets();
+            calculateAndRenderEconomy();
+            renderGraph();
+            renderHistoricalTables();
+            updateSummaryCardPreview();
+        }
+
+        function refreshUI() {
+            loadDayUI();
+        }
+
+        function renderPersonTable(person, topics) {
+            const tbody = document.getElementById(person + 'TableBody');
+            tbody.innerHTML = '';
+            let completedCount = 0;
+            const selectedDateVal = document.getElementById('activeDate').value;
+            const canEdit = isEditor && (selectedDateVal === todayStr || selectedDateVal === yesterdayStr);
+
+            if (!topics || topics.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" class="text-center py-3 text-xs text-gray-400 italic">No topics added for this date.</td></tr>`;
+            } else {
+                topics.forEach((item, index) => {
+                    if (item.status === 'Completed') completedCount++;
+                    const row = document.createElement('tr');
+                    row.className = "border-b border-gray-100";
+                    row.innerHTML = `
+                        <td class="py-2.5 pr-2 text-gray-800 text-xs font-medium">${item.name}</td>
+                        <td class="py-2.5 pr-2">
+                            <select ${!canEdit ? 'disabled' : ''} onchange="updateStatus('${person}', ${index}, this.value)" class="text-xs border rounded-lg p-1 w-full font-bold ${item.status === 'Completed' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300'}">
+                                <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            const total = topics.length;
+            const percentage = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+            const badge = document.getElementById(person + 'Percentage');
+            badge.innerText = percentage + '% Completed';
+            badge.className = `text-xs font-extrabold px-3 py-1 rounded-full ${percentage === 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`;
+        }
+
+        function addTopic(person) {
+            const selectedDate = document.getElementById('activeDate').value;
+            if (!isEditor || (selectedDate !== todayStr && selectedDate !== yesterdayStr)) return;
+
+            const input = document.getElementById(person + 'Input');
+            const val = input.value.trim();
+            if (val !== '') {
+                const db = getDB();
+                if (!db[selectedDate]) db[selectedDate] = { anshu: { hours: 0, topics: [] }, aastha: { hours: 0, topics: [] } };
+                if (!db[selectedDate][person]) db[selectedDate][person] = { hours: 0, topics: [] };
+                if (!db[selectedDate][person].topics) db[selectedDate][person].topics = [];
+                
+                db[selectedDate][person].topics.push({ name: val, status: 'Pending' });
+                saveDB(db);
+                input.value = '';
+            }
+        }
+
+        function updateStatus(person, index, status) {
+            const selectedDate = document.getElementById('activeDate').value;
+            if (!isEditor || (selectedDate !== todayStr && selectedDate !== yesterdayStr)) return;
+
+            const db = getDB();
+            if (db[selectedDate] && db[selectedDate][person] && db[selectedDate][person].topics) {
+                db[selectedDate][person].topics[index].status = status;
+                saveDB(db);
+            }
+        }
+
+        function updateStudyHours(person) {
+            const selectedDate = document.getElementById('activeDate').value;
+            if (!isEditor || (selectedDate !== todayStr && selectedDate !== yesterdayStr)) return;
+
+            const h = parseInt(document.getElementById(person + 'H').value) || 0;
+            const m = parseInt(document.getElementById(person + 'M').value) || 0;
+            const totalVal = parseFloat((h + (m / 60)).toFixed(2));
+
+            const db = getDB();
+            if (!db[selectedDate]) db[selectedDate] = { anshu: { hours: 0, topics: [] }, aastha: { hours: 0, topics: [] } };
+            if (!db[selectedDate][person]) db[selectedDate][person] = { hours: 0, topics: [] };
+            
+            db[selectedDate][person].hours = totalVal;
+            saveDB(db);
+        }
+
+        // ==========================================
+        // 📅 WEEKLY TARGETS LOGIC
+        // ==========================================
+        function populateWeekSelector() {
+            const selector = document.getElementById('weekSelector');
+            const currentWeekKey = getWeekKey();
+            const db = getDB();
+            
+            let weeks = new Set([currentWeekKey]);
+            let now = new Date();
+            for (let i = 1; i <= 6; i++) {
+                let futureDate = new Date(now);
+                futureDate.setDate(now.getDate() + (i * 7));
+                weeks.add(getWeekKey(futureDate));
+            }
+
+            if (db._weekly) {
+                Object.keys(db._weekly).forEach(wk => weeks.add(wk));
+            }
+
+            let sortedWeeks = Array.from(weeks).sort();
+            let currentVal = selector.value || currentWeekKey;
+
+            selector.innerHTML = '';
+            sortedWeeks.forEach(wk => {
+                let opt = document.createElement('option');
+                opt.value = wk;
+                opt.text = getWeekRangeFormatted(wk);
+                if (wk === currentVal) opt.selected = true;
+                selector.appendChild(opt);
+            });
+        }
+
+        function getSelectedWeekKey() {
+            const selector = document.getElementById('weekSelector');
+            return selector ? selector.value : getWeekKey();
+        }
+
+        function addWeeklyTarget(person) {
+            if (!isEditor) {
+                alert("Please log in to Editor Mode.");
+                return;
+            }
+            const currentWeekKey = getWeekKey();
+            const selectedWk = getSelectedWeekKey();
+
+            if (selectedWk < currentWeekKey) {
+                alert("❌ You cannot add targets for past weeks.");
+                return;
+            }
+
+            const input = document.getElementById(person + 'WeeklyInput');
+            const val = input.value.trim();
+            if (val !== '') {
+                const db = getDB();
+                if (!db._weekly) db._weekly = {};
+                if (!db._weekly[selectedWk]) db._weekly[selectedWk] = { anshu: [], aastha: [] };
+                
+                db._weekly[selectedWk][person].push({ name: val, status: 'Pending' });
+                saveDB(db);
+                input.value = '';
+            }
+        }
+
+        function deleteWeeklyTarget(person, index) {
+            if (!isEditor) return;
+            const currentWeekKey = getWeekKey();
+            const selectedWk = getSelectedWeekKey();
+
+            if (selectedWk <= currentWeekKey) {
+                alert("❌ Weekly targets cannot be deleted once the week has started or passed!");
+                return;
+            }
+
+            if (!confirm("Are you sure you want to delete this weekly goal?")) return;
+
+            const db = getDB();
+            if (db._weekly && db._weekly[selectedWk] && db._weekly[selectedWk][person]) {
+                db._weekly[selectedWk][person].splice(index, 1);
+                saveDB(db);
+            }
+        }
+
+        function updateWeeklyStatus(person, index, status) {
+            if (!isEditor) return;
+            const currentWeekKey = getWeekKey();
+            const selectedWk = getSelectedWeekKey();
+
+            if (selectedWk !== currentWeekKey) {
+                alert("❌ Goal status can only be updated during the active current week!");
+                return;
+            }
+
+            const db = getDB();
+            if (db._weekly && db._weekly[selectedWk] && db._weekly[selectedWk][person]) {
+                db._weekly[selectedWk][person][index].status = status;
+                saveDB(db);
+            }
+        }
+
+        function switchSelectedWeek() {
+            renderWeeklyTargets();
+        }
+
+        function renderWeeklyTargets() {
+            const selectedWk = getSelectedWeekKey();
+            const currentWk = getWeekKey();
+            document.getElementById('weeklyDateRangeDisplay').innerText = `(${getWeekRangeFormatted(selectedWk)})`;
+
+            const db = getDB();
+            const weeklyObj = (db._weekly && db._weekly[selectedWk]) ? db._weekly[selectedWk] : { anshu: [], aastha: [] };
+            
+            const isFutureWeek = selectedWk > currentWk;
+            const isCurrentWeek = selectedWk === currentWk;
+            const canAddDelete = isEditor && isFutureWeek;
+            const canUpdateStatus = isEditor && isCurrentWeek;
+
+            ['anshu', 'aastha'].forEach(person => {
+                const tbody = document.getElementById(person + 'WeeklyTableBody');
+                tbody.innerHTML = '';
+                const targets = weeklyObj[person] || [];
+                let completed = 0;
+
+                if (targets.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" class="text-center py-2 text-xs text-gray-400 italic">No weekly goals set for this week.</td></tr>`;
+                } else {
+                    targets.forEach((t, idx) => {
+                        if (t.status === 'Completed') completed++;
+                        let tr = document.createElement('tr');
+                        tr.className = "border-b border-gray-100 text-xs";
+                        tr.innerHTML = `
+                            <td class="py-2 pr-2 font-medium">${t.name}</td>
+                            <td class="py-2 w-28">
+                                <select ${!canUpdateStatus ? 'disabled' : ''} onchange="updateWeeklyStatus('${person}', ${idx}, this.value)" class="text-xs border rounded p-1 w-full font-bold ${t.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                    <option value="Pending" ${t.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Completed" ${t.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </td>
+                            <td class="py-2 text-right">
+                                ${canAddDelete ? `<button onclick="deleteWeeklyTarget('${person}', ${idx})" class="text-red-400 hover:text-red-700 font-bold px-1">✕</button>` : ''}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                let pct = targets.length > 0 ? Math.round((completed / targets.length) * 100) : 0;
+                document.getElementById(`${person}WeeklyPercent`).innerText = pct + '% Done';
+            });
+        }
+
+        // ==========================================
+        // 🪙 ECONOMY, TIER RANKS & CLAIMABLE STREAKS
+        // ==========================================
+        function calculateSimpleStreak(db, person, reqHour) {
+            let streak = 0;
+            let d = new Date();
+            for (let i = 0; i < 365; i++) {
+                let dStr = getLocalDateString(d);
+                let dayObj = db[dStr];
+                let asp = dayObj && dayObj[person] ? dayObj[person] : { hours: 0, topics: [] };
+                let h = asp.hours || 0;
+                
+                if (h >= reqHour || asp.kavachUsed) {
+                    streak++;
+                } else {
+                    if (i === 0 && h < reqHour) {
+                        d.setDate(d.getDate() - 1);
+                        continue;
+                    }
+                    break;
+                }
+                d.setDate(d.getDate() - 1);
+            }
+            return streak;
+        }
+
+        function calculateTargetStreakSimple(db, person) {
+            let streak = 0;
+            let d = new Date();
+            for (let i = 0; i < 365; i++) {
+                let dStr = getLocalDateString(d);
+                let dayObj = db[dStr];
+                let asp = dayObj && dayObj[person] ? dayObj[person] : { hours: 0, topics: [] };
+                let topics = asp.topics || [];
+                let is100 = topics.length > 0 && topics.every(t => t.status === 'Completed');
+                
+                if (is100 || asp.kavachUsed) {
+                    streak++;
+                } else {
+                    if (i === 0 && !is100) {
+                        d.setDate(d.getDate() - 1);
+                        continue;
+                    }
+                    break;
+                }
+                d.setDate(d.getDate() - 1);
+            }
+            return streak;
+        }
+
+        function getSustainingStreakSimple(db, person, targetHrs) {
+            return calculateSimpleStreak(db, person, targetHrs);
+        }
+
+        function calculateAndRenderEconomy() {
+            const db = getDB();
+            let wallet = db._wallet || {
+                anshu: { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 0 },
+                aastha: { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 0 }
+            };
+
+            const sortedDates = Object.keys(db).filter(k => !k.startsWith('_')).sort();
+            const weekKey = getWeekKey();
+            const weeklyObj = getWeeklyData(weekKey);
+
+            ['anshu', 'aastha'].forEach(person => {
+                let totalCoinsEarned = 0;
+
+                // Check 2-day consecutive total hours milestone for Kavach (Anshu: 11h total, Aastha: 14h total over 2 consecutive calendar days)
+                let targetTotal2Days = person === 'anshu' ? 11.0 : 14.0;
+                let consecutiveKavachEarned = 0;
+
+                for (let i = 0; i < sortedDates.length - 1; i++) {
+                    let d1 = new Date(sortedDates[i]);
+                    let d2 = new Date(sortedDates[i+1]);
+                    let diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+                    if (diffDays === 1) {
+                        let day1Obj = db[sortedDates[i]][person] || { hours: 0 };
+                        let day2Obj = db[sortedDates[i+1]][person] || { hours: 0 };
+                        let h1 = day1Obj.hours || 0;
+                        let h2 = day2Obj.hours || 0;
+                        if ((h1 + h2) >= targetTotal2Days || day1Obj.kavachUsed || day2Obj.kavachUsed) {
+                            consecutiveKavachEarned++;
+                            i++; // non-overlapping pairs
+                        }
+                    }
+                }
+
+                // Calculate progress for the latest pair (or today + yesterday)
+                let latestPairTotal = 0;
+                let latestPairMet = false;
+                if (sortedDates.length >= 2) {
+                    let lastDateStr = sortedDates[sortedDates.length - 1];
+                    let prevDateStr = sortedDates[sortedDates.length - 2];
+                    let d1 = new Date(prevDateStr);
+                    let d2 = new Date(lastDateStr);
+                    if (Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) === 1) {
+                        let h1 = (db[prevDateStr][person] && db[prevDateStr][person].hours) || 0;
+                        let h2 = (db[lastDateStr][person] && db[lastDateStr][person].hours) || 0;
+                        latestPairTotal = h1 + h2;
+                        if (latestPairTotal >= targetTotal2Days) latestPairMet = true;
+                    }
+                }
+
+                if (!wallet[person]) wallet[person] = { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 0 };
+                let baseKavach = 3;
+                let boughtKavach = wallet[person].kavachBought || 0;
+                let spentKavach = wallet[person].kavachSpent || 0;
+                let totalKavach = baseKavach + consecutiveKavachEarned + boughtKavach - spentKavach;
+                if (totalKavach < 0) totalKavach = 0;
+                wallet[person].kavach = totalKavach;
+
+                sortedDates.forEach(dStr => {
+                    const dayObj = db[dStr];
+                    if (dayObj && dayObj[person]) {
+                        const h = dayObj[person].hours || 0;
+                        const topics = dayObj[person].topics || [];
+                        const comp = topics.filter(t => t.status === 'Completed').length;
+                        const is100 = topics.length > 0 && comp === topics.length;
+
+                        if (person === 'anshu') {
+                            if (h >= 7) totalCoinsEarned += 100;
+                            else if (h >= 6) totalCoinsEarned += 50;
+                            else if (h >= 5) totalCoinsEarned += 20;
+                            else if (h >= 3) totalCoinsEarned += 10;
+                        } else {
+                            if (h >= 8) totalCoinsEarned += 100;
+                            else if (h >= 7) totalCoinsEarned += 50;
+                            else if (h >= 5) totalCoinsEarned += 20;
+                            else if (h >= 3) totalCoinsEarned += 10;
+                        }
+
+                        if (is100) totalCoinsEarned += 20;
+                    }
+                });
+
+                let reqHour = person === 'anshu' ? 3.5 : 5.0;
+                let activeHourStreak = calculateSimpleStreak(db, person, reqHour);
+                let activeTargetStreak = calculateTargetStreakSimple(db, person);
+
+                let target4h = person === 'anshu' ? 4 : 6;
+                let target5h = person === 'anshu' ? 5 : 7;
+
+                let streak7d_45 = getSustainingStreakSimple(db, person, target4h);
+                let streak7d_57 = getSustainingStreakSimple(db, person, target5h);
+
+                // Weekly Goal Bonuses: 80%+=50c, 90%+=150c, 100%=300c
+                const wTargets = weeklyObj[person] || [];
+                if (wTargets.length > 0) {
+                    const wComp = wTargets.filter(t => t.status === 'Completed').length;
+                    const wPct = (wComp / wTargets.length) * 100;
+                    if (wPct === 100) totalCoinsEarned += 300;
+                    else if (wPct >= 90) totalCoinsEarned += 150;
+                    else if (wPct >= 80) totalCoinsEarned += 50;
+                }
+
+                let netCoins = totalCoinsEarned - (wallet[person] ? (wallet[person].coinsSpent || 0) : 0);
+                if (netCoins < 0) netCoins = 0;
+
+                let tierName = "Aspirant";
+                let tierClass = "bg-gray-100 text-gray-700";
+                if (netCoins >= 10001) {
+                    tierName = "💎 Cabinet Secretary";
+                    tierClass = "bg-purple-100 text-purple-900 border border-purple-300";
+                } else if (netCoins >= 8001) {
+                    tierName = "🎖️ Joint Secretary";
+                    tierClass = "bg-emerald-100 text-emerald-800 border border-emerald-300";
+                } else if (netCoins >= 6001) {
+                    tierName = "🥇 DM (Collector)";
+                    tierClass = "bg-yellow-100 text-yellow-900 border border-yellow-300";
+                } else if (netCoins >= 3001) {
+                    tierName = "🥈 SDM";
+                    tierClass = "bg-slate-200 text-slate-800 border border-slate-300";
+                } else if (netCoins >= 1001) {
+                    tierName = "🥉 LBSNAA Trainee";
+                    tierClass = "bg-amber-100 text-amber-800 border border-amber-300";
+                }
+
+                document.getElementById(`${person}Coins`).innerText = netCoins;
+                document.getElementById(`${person}HourStreak`).innerText = `${activeHourStreak} days`;
+                document.getElementById(`${person}TargetStreak`).innerText = `${activeTargetStreak} days`;
+                document.getElementById(`${person}Kavach`).innerText = `🛡️ ${totalKavach}`;
+                
+                const tierEl = document.getElementById(`${person}Tier`);
+                tierEl.innerText = tierName;
+                tierEl.className = `text-[11px] font-extrabold px-2.5 py-0.5 rounded-md ${tierClass}`;
+
+                let s7_1 = Math.min(streak7d_45, 7);
+                let s7_2 = Math.min(streak7d_57, 7);
+                let s15_1 = Math.min(streak7d_45, 15);
+                let s15_2 = Math.min(streak7d_57, 15);
+                let s30_1 = Math.min(streak7d_45, 30);
+                let t10 = Math.min(activeTargetStreak, 10);
+
+                const boardEl = document.getElementById(`${person}StreaksBoard`);
+                let bHtml = `
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                        <span class="text-slate-400 block text-[10px]">7 DAYS (${target4h} HR+) [100c]</span>
+                        <strong class="text-indigo-900 text-xs">${s7_1}/7 days</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                        <span class="text-slate-400 block text-[10px]">7 DAYS (${target5h} HR+) [200c]</span>
+                        <strong class="text-indigo-900 text-xs">${s7_2}/7 days</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                        <span class="text-slate-400 block text-[10px]">15 DAYS (${target4h} HR+) [250c]</span>
+                        <strong class="text-indigo-900 text-xs">${s15_1}/15 days</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                        <span class="text-slate-400 block text-[10px]">15 DAYS (${target5h} HR+) [400c]</span>
+                        <strong class="text-indigo-900 text-xs">${s15_2}/15 days</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                        <span class="text-slate-400 block text-[10px]">30 DAYS (${target4h} HR+) [600c]</span>
+                        <strong class="text-indigo-900 text-xs">${s30_1}/30 days</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
+                        <span class="text-slate-400 block text-[10px]">10 DAYS 100% TARGET [300c]</span>
+                        <strong class="text-indigo-900 text-xs">${t10}/10 days</strong>
+                    </div>
+                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100 col-span-2 bg-amber-50/50 border-amber-200">
+                        <span class="text-amber-800 block text-[10px] font-bold">🛡️ KAVACH MILESTONE (2-DAY ${person === 'anshu' ? '11H' : '14H'} TOTAL) [+1 Shield]</span>
+                        <strong class="text-amber-900 text-xs">${latestPairTotal.toFixed(1)} / ${targetTotal2Days} hrs ${latestPairMet ? '✅ Completed!' : '(Active Pair)'}</strong>
+                    </div>
+                `;
+                boardEl.innerHTML = bHtml;
+            });
+        }
+
+        function getSustainingStreak(history, targetHrs) {
+            let currentStreak = 0;
+            for (let i = history.length - 1; i >= 0; i--) {
+                if (history[i].hours >= targetHrs) {
+                    currentStreak++;
+                } else if (history[i].kavachUsed) {
+                    currentStreak++;
+                } else {
+                    break;
+                }
+            }
+            return currentStreak;
+        }
+
+        function useKavach(person) {
+            if (!isEditor) {
+                alert("Please log in to Editor Mode first.");
+                return;
+            }
+            const selectedDate = document.getElementById('activeDate').value;
+            if (selectedDate !== todayStr && selectedDate !== yesterdayStr) {
+                alert("❌ Kavach can only be applied to Today or Yesterday (48-hour editing window).");
+                return;
+            }
+
+            const pin = prompt(`🔒 Security Verification: Enter Passcode for ${person.toUpperCase()} to authorize Kavach usage for ${selectedDate} (Passcode: 1234):`);
+            if (pin !== DEFAULT_PIN) {
+                alert("❌ Incorrect Passcode. Kavach usage canceled.");
+                return;
+            }
+
+            const db = getDB();
+            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 3, coinsSpent: 0 } };
+
+            if ((db._wallet[person].kavach || 3) <= 0) {
+                alert(`❌ No Kavach shields available for ${person.toUpperCase()}.`);
+                return;
+            }
+
+            if (confirm(`Authorize 1 Kavach Shield for ${person.toUpperCase()} for date ${selectedDate}?`)) {
+                db._wallet[person].kavachSpent = (db._wallet[person].kavachSpent || 0) + 1;
+                const dayData = getDayData(selectedDate);
+                dayData[person].kavachUsed = true;
+                saveDB(db);
+                alert(`🛡️ Kavach applied successfully for ${person.toUpperCase()} on ${selectedDate}!`);
+            }
+        }
+
+        function buyKavach(person) {
+            if (!isEditor) {
+                alert("Please log in to Editor Mode.");
+                return;
+            }
+            const db = getDB();
+            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 3, coinsSpent: 0 } };
+
+            let netCoins = parseInt(document.getElementById(`${person}Coins`).innerText) || 0;
+            if (netCoins < 300) {
+                alert(`❌ Insufficient Sankalp Coins! You need 300 coins to buy 1 Kavach.`);
+                return;
+            }
+
+            if (confirm(`Spend 300 Sankalp Coins to purchase 1 Kavach Shield for ${person.toUpperCase()}?`)) {
+                db._wallet[person].coinsSpent = (db._wallet[person].coinsSpent || 0) + 300;
+                db._wallet[person].kavachBought = (db._wallet[person].kavachBought || 0) + 1;
+                saveDB(db);
+                alert(`🎉 1 Kavach Shield purchased successfully!`);
+            }
+        }
+
+        function toggleEconomyModal() {
+            document.getElementById('economyModal').classList.toggle('hidden');
+        }
+
+        let studyChart = null;
+
+        function renderGraph() {
+            const view = document.getElementById('graphViewToggle').value;
+            const ctx = document.getElementById('studyTimeChart').getContext('2d');
+            const db = getDB();
+
+            let labels = [];
+            let anshuData = [];
+            let aasthaData = [];
+            let anshuTotal = 0;
+            let aasthaTotal = 0;
+
+            let yMin = 0, yMax = 10, yStep = 1;
+
+            if (view === 'weekly') {
+                let d = new Date();
+                let day = d.getDay();
+                let sunday = new Date(d);
+                sunday.setDate(d.getDate() - day);
+
+                for (let i = 0; i < 7; i++) {
+                    let currDay = new Date(sunday);
+                    currDay.setDate(sunday.getDate() + i);
+                    let dStr = getLocalDateString(currDay);
+                    labels.push(currDay.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' }));
+                    
+                    const dayObj = db[dStr];
+                    let aH = dayObj && dayObj.anshu ? dayObj.anshu.hours : 0;
+                    let aaH = dayObj && dayObj.aastha ? dayObj.aastha.hours : 0;
+                    anshuData.push(aH);
+                    aasthaData.push(aaH);
+                    anshuTotal += aH;
+                    aasthaTotal += aaH;
+                }
+                yMin = 0; yMax = 10; yStep = 1;
+            } else if (view === 'monthly') {
+                for (let w = 3; w >= 0; w--) {
+                    labels.push(`Week ${4 - w}`);
+                    let anshuSum = 0, aasthaSum = 0;
+                    for (let day = 0; day < 7; day++) {
+                        const d = new Date();
+                        d.setDate(d.getDate() - (w * 7 + day));
+                        const dStr = getLocalDateString(d);
+                        if (db[dStr]) {
+                            anshuSum += db[dStr].anshu ? db[dStr].anshu.hours : 0;
+                            aasthaSum += db[dStr].aastha ? db[dStr].aastha.hours : 0;
+                        }
+                    }
+                    anshuData.push(anshuSum);
+                    aasthaData.push(aasthaSum);
+                    anshuTotal += anshuSum;
+                    aasthaTotal += aasthaSum;
+                }
+                yMin = 0; yMax = 250; yStep = 50;
+            } else if (view === 'quarterly') {
+                labels = ['Q1 (Jan-Mar)', 'Q2 (Apr-Jun)', 'Q3 (Jul-Sep)', 'Q4 (Oct-Dec)'];
+                let anshuQ = [0, 0, 0, 0];
+                let aasthaQ = [0, 0, 0, 0];
+
+                Object.keys(db).forEach(dateStr => {
+                    let dateObj = new Date(dateStr);
+                    if (!isNaN(dateObj)) {
+                        let month = dateObj.getMonth();
+                        let qIndex = Math.floor(month / 3);
+                        let entry = db[dateStr];
+                        if (entry.anshu) anshuQ[qIndex] += (entry.anshu.hours || 0);
+                        if (entry.aastha) aasthaQ[qIndex] += (entry.aastha.hours || 0);
+                    }
+                });
+
+                anshuData = anshuQ;
+                aasthaData = aasthaQ;
+                anshuTotal = anshuQ.reduce((a, b) => a + b, 0);
+                aasthaTotal = aasthaQ.reduce((a, b) => a + b, 0);
+                yMin = 300; yMax = 700; yStep = 50;
+            } else if (view === 'yearly') {
+                let currentYear = new Date().getFullYear();
+                labels = [`${currentYear - 3}`, `${currentYear - 2}`, `${currentYear - 1}`, `${currentYear}`];
+                let anshuY = [0, 0, 0, 0];
+                let aasthaY = [0, 0, 0, 0];
+                let yearsArr = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear];
+
+                Object.keys(db).forEach(dateStr => {
+                    let dateObj = new Date(dateStr);
+                    if (!isNaN(dateObj)) {
+                        let yr = dateObj.getFullYear();
+                        let yrIndex = yearsArr.indexOf(yr);
+                        if (yrIndex !== -1) {
+                            let entry = db[dateStr];
+                            if (entry.anshu) anshuY[yrIndex] += (entry.anshu.hours || 0);
+                            if (entry.aastha) aasthaY[yrIndex] += (entry.aastha.hours || 0);
+                        }
+                    }
+                });
+
+                anshuData = anshuY;
+                aasthaData = aasthaY;
+                anshuTotal = anshuY.reduce((a, b) => a + b, 0);
+                aasthaTotal = aasthaY.reduce((a, b) => a + b, 0);
+                yMin = 1000; yMax = 2600; yStep = 300;
+            }
+
+            document.getElementById('graphTotals').innerText = `Total — Anshu: ${anshuTotal} hrs | Aastha: ${aasthaTotal} hrs`;
+
+            const anshuGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            anshuGradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+            anshuGradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+            const aasthaGradient = ctx.createLinearGradient(0, 0, 0, 300);
+            aasthaGradient.addColorStop(0, 'rgba(225, 29, 72, 0.4)');
+            aasthaGradient.addColorStop(1, 'rgba(225, 29, 72, 0)');
+
+            if (studyChart) studyChart.destroy();
+
+            studyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Anshu (Hours)',
+                            data: anshuData,
+                            borderColor: '#4f46e5',
+                            backgroundColor: anshuGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4f46e5',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Aastha (Hours)',
+                            data: aasthaData,
+                            borderColor: '#e11d48',
+                            backgroundColor: aasthaGradient,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#e11d48',
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            min: yMin,
+                            max: yMax,
+                            ticks: {
+                                stepSize: yStep,
+                                callback: val => val + ' hrs'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHistoricalTables() {
+            const db = getDB();
+
+            let weeklyHeaderHtml = `<th class="border border-amber-300 p-2 text-left">Aspirant</th>`;
+            let weeklyDates = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dStr = getLocalDateString(d);
+                weeklyDates.push(dStr);
+                const formatted = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                weeklyHeaderHtml += `<th class="border border-amber-300 p-2">${formatted}</th>`;
+            }
+            document.getElementById('weeklyTableHeader').innerHTML = weeklyHeaderHtml;
+
+            let weeklyBodyHtml = '';
+            ['anshu', 'aastha'].forEach(person => {
+                let rowHtml = `<td class="border border-amber-300 p-2 font-bold text-left ${person === 'anshu' ? 'text-indigo-700' : 'text-rose-700'}">${person.toUpperCase()}</td>`;
+                weeklyDates.forEach(dStr => {
+                    const dayObj = db[dStr];
+                    let percent = '-';
+                    if (dayObj && dayObj[person] && dayObj[person].topics && dayObj[person].topics.length > 0) {
+                        const topics = dayObj[person].topics;
+                        const comp = topics.filter(t => t.status === 'Completed').length;
+                        percent = Math.round((comp / topics.length) * 100) + '%';
+                    }
+                    rowHtml += `<td class="border border-amber-300 p-2 text-xs font-semibold text-gray-700">${percent}</td>`;
+                });
+                weeklyBodyHtml += `<tr>${rowHtml}</tr>`;
+            });
+            document.getElementById('weeklyTableBody').innerHTML = weeklyBodyHtml;
+
+            let monthlyHeaderHtml = `<th class="border border-amber-300 p-2 text-left">Aspirant</th>`;
+            let ranges = [];
+            for (let w = 3; w >= 0; w--) {
+                const start = new Date();
+                start.setDate(start.getDate() - (w * 7 + 6));
+                const end = new Date();
+                end.setDate(end.getDate() - (w * 7));
+                const rangeStr = `${start.toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${end.toLocaleDateString('en-US', {month:'short', day:'numeric'})}`;
+                ranges.push({ wIndex: w, rangeStr });
+                monthlyHeaderHtml += `<th class="border border-amber-300 p-2">${rangeStr}</th>`;
+            }
+            document.getElementById('monthlyTableHeader').innerHTML = monthlyHeaderHtml;
+
+            let monthlyBodyHtml = '';
+            ['anshu', 'aastha'].forEach(person => {
+                let rowHtml = `<td class="border border-amber-300 p-2 font-bold text-left ${person === 'anshu' ? 'text-indigo-700' : 'text-rose-700'}">${person.toUpperCase()}</td>`;
+                ranges.forEach(r => {
+                    let totalTopics = 0;
+                    let compTopics = 0;
+                    for (let day = 0; day < 7; day++) {
+                        const d = new Date();
+                        d.setDate(d.getDate() - (r.wIndex * 7 + day));
+                        const dStr = getLocalDateString(d);
+                        if (db[dStr] && db[dStr][person] && db[dStr][person].topics && db[dStr][person].topics.length > 0) {
+                            const topics = db[dStr][person].topics;
+                            totalTopics += topics.length;
+                            compTopics += topics.filter(t => t.status === 'Completed').length;
+                        }
+                    }
+                    let avgPercent = totalTopics > 0 ? Math.round((compTopics / totalTopics) * 100) + '%' : '-';
+                    rowHtml += `<td class="border border-amber-300 p-2 text-xs font-semibold text-gray-700">${avgPercent}</td>`;
+                });
+                monthlyBodyHtml += `<tr>${rowHtml}</tr>`;
+            });
+            document.getElementById('monthlyTableBody').innerHTML = monthlyBodyHtml;
+        }
+
+        function switchDataTable() {
+            const view = document.getElementById('tableDataToggle').value;
+            if (view === 'weekly') {
+                document.getElementById('weeklyTableContainer').classList.remove('hidden');
+                document.getElementById('monthlyTableContainer').classList.add('hidden');
+            } else {
+                document.getElementById('weeklyTableContainer').classList.add('hidden');
+                document.getElementById('monthlyTableContainer').classList.remove('hidden');
+            }
+        }
+
+        function formatHoursMinutes(decimalHours) {
+            const h = Math.floor(decimalHours || 0);
+            const m = Math.round(((decimalHours || 0) - h) * 60);
+            if (h === 0 && m === 0) return "0 hrs";
+            if (h === 0) return `${m}m`;
+            if (m === 0) return `${h}h`;
+            return `${h}h ${m}m`;
+        }
+
+        function updateSummaryCardPreview() {
+            const cardDate = document.getElementById('summaryCardDate').value;
+            const db = getDB();
+            const dayObj = db[cardDate];
+
+            document.getElementById('cardDateDisplay').innerText = "Report Date: " + cardDate;
+
+            ['anshu', 'aastha'].forEach(person => {
+                const personData = dayObj && dayObj[person] ? dayObj[person] : { hours: 0, topics: [] };
+                const topics = personData.topics || [];
+                const total = topics.length;
+                const completed = topics.filter(t => t.status === 'Completed').length;
+                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                document.getElementById(`card${person.charAt(0).toUpperCase() + person.slice(1)}Hours`).innerText = formatHoursMinutes(personData.hours);
+                document.getElementById(`card${person.charAt(0).toUpperCase() + person.slice(1)}Completion`).innerText = percent + "% Achieved (" + completed + "/" + total + " topics)";
+                
+                const detailsContainer = document.getElementById(`card${person.charAt(0).toUpperCase() + person.slice(1)}Details`);
+                if (total > 0) {
+                    detailsContainer.innerHTML = topics.map(t => {
+                        const icon = t.status === 'Completed' ? '✅' : '❌';
+                        return `<div>${icon} ${t.name}</div>`;
+                    }).join('');
+                } else {
+                    detailsContainer.innerHTML = `<span class="italic text-[11px] text-slate-400">No data recorded</span>`;
+                }
+            });
+        }
+
+        function copyWhatsAppText() {
+            const cardDate = document.getElementById('summaryCardDate').value;
+            const db = getDB();
+            const dayObj = db[cardDate] || {};
+
+            let text = `🌟 *Daily study report (${cardDate})* 🌟\n\n`;
+
+            ['anshu', 'aastha'].forEach(person => {
+                const pData = dayObj[person] || { hours: 0, topics: [] };
+                const topics = pData.topics || [];
+                const comp = topics.filter(t => t.status === 'Completed').length;
+                const pct = topics.length > 0 ? Math.round((comp / topics.length) * 100) : 0;
+                
+                const emoji = person === 'anshu' ? '👦' : '👧';
+                text += `${emoji} *${person.toUpperCase()}*\n`;
+                text += `⏱️ Hours: ${formatHoursMinutes(pData.hours)} | 📊 Target: ${pct}%\n`;
+                if (topics.length > 0) {
+                    topics.forEach(t => {
+                        text += `${t.status === 'Completed' ? '✅' : '❌'} ${t.name}\n`;
+                    });
+                } else {
+                    text += `_No topics logged_\n`;
+                }
+                text += `\n`;
+            });
+            text += `✨ Consistency is key! Keep pushing forward! 🚀`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert("📋 WhatsApp summary text copied to clipboard successfully!");
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(text);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            let textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                let successful = document.execCommand('copy');
+                if (successful) {
+                    alert("📋 WhatsApp summary text copied to clipboard successfully!");
+                } else {
+                    alert("❌ Failed to copy text.");
+                }
+            } catch (err) {
+                alert("❌ Unable to copy to clipboard.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function downloadCard() {
+            if (!confirm("Are you sure you want to download the summary card image?")) return;
+            const cardElement = document.getElementById('shareableCard');
+            html2canvas(cardElement, { scale: 3, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Study-Progress-Report-${document.getElementById('summaryCardDate').value}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
