@@ -75,7 +75,7 @@
                     </div>
                     <div class="flex justify-between items-center pt-1 text-xs">
                         <div>
-                            <span class="text-slate-600 font-semibold cursor-pointer hover:underline text-blue-900" onclick="showKavachHistory('anshu')" title="Click to view Kavach usage history">Kavach Shield: <strong id="anshuKavach" class="text-blue-600">🛡️ 4</strong></span> <span id="anshuActivatedBadge" class="hidden text-[10px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded ml-1">Activated</span>
+                            <span class="text-slate-600 font-semibold cursor-pointer hover:underline text-blue-900" onclick="showKavachHistory('anshu')" title="Click to view Kavach usage history">Kavach Shield: <strong id="anshuKavach" class="text-blue-600">🛡️ 3</strong></span> <span id="anshuActivatedBadge" class="hidden text-[10px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded ml-1">Activated</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <button onclick="useKavach('anshu')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
@@ -414,7 +414,6 @@
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2">
                     <p class="font-bold text-blue-900 mb-1">🛡️ Kavach Shield Rules:</p>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><b>Starting Balance & Free Drops:</b> Start with <b>4 Kavach Shields</b>, plus <b>+1 Free Shield</b> automatically on the 1st of every month.</li>
                         <li><b>How to Buy:</b> Spend <b>300 Sankalp Coins</b> to buy 1 shield instantly.</li>
                         <li><b>How to Earn Free Shields:</b> Study 2 consecutive days with a combined total of <b>11+ hours</b> (Anshu) or <b>14+ hours</b> (Aastha) to earn <b>+1 Shield</b>.</li>
                         <li><b>Back-date Usage:</b> If you forgot to apply a shield yesterday, you can still apply it to Yesterday or Today within the 48-hour window.</li>
@@ -664,87 +663,6 @@
             aasthaM.disabled = !canEdit;
 
             loadDayUI();
-        }
-
-        function toggleKavachHistoryModal() {
-            document.getElementById('kavachHistoryModal').classList.toggle('hidden');
-        }
-
-        function showKavachHistory(person) {
-            const db = getDB();
-            const sortedDates = Object.keys(db).filter(k => !k.startsWith('_')).sort();
-            
-            let transactions = [];
-
-            // 1. Initial Starting Balance (4 shields)
-            transactions.push({ type: 'credit', label: 'Starting Balance', desc: 'Initial complimentary allocation', amount: 4, date: 'Initial' });
-
-            // 2. Monthly Free Drops
-            let uniqueMonths = new Set();
-            sortedDates.forEach(dStr => {
-                let parts = dStr.split('-');
-                if (parts.length === 3) uniqueMonths.add(`${parts[0]}-${parts[1]}`);
-            });
-            let nowParts = getLocalDateString().split('-');
-            uniqueMonths.add(`${nowParts[0]}-${nowParts[1]}`);
-            uniqueMonths.forEach(m => {
-                transactions.push({ type: 'credit', label: 'Monthly Free Drop', desc: `Automatic 1st of month allocation (${m})`, amount: 1, date: `${m}-01` });
-            });
-
-            // 3. Milestone Earned (+1 for every 2-day combined threshold)
-            let targetTotal2Days = person === 'anshu' ? 11.0 : 14.0;
-            for (let i = 0; i < sortedDates.length - 1; i++) {
-                let d1 = new Date(sortedDates[i]);
-                let d2 = new Date(sortedDates[i+1]);
-                let diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
-                if (diffDays === 1) {
-                    let day1Obj = db[sortedDates[i]][person] || { hours: 0 };
-                    let day2Obj = db[sortedDates[i+1]][person] || { hours: 0 };
-                    let h1 = day1Obj.hours || 0;
-                    let h2 = day2Obj.hours || 0;
-                    if ((h1 + h2) >= targetTotal2Days) {
-                        transactions.push({ type: 'credit', label: 'Milestone Reward', desc: `2-day total ≥ ${targetTotal2Days}h (${sortedDates[i]} & ${sortedDates[i+1]})`, amount: 1, date: sortedDates[i+1] });
-                        i++;
-                    }
-                }
-            }
-
-            // 4. Coin Purchases
-            let wallet = db._wallet || {};
-            let bought = (wallet[person] && wallet[person].kavachBought) || 0;
-            for (let b = 0; b < bought; b++) {
-                transactions.push({ type: 'credit', label: 'Coin Marketplace', desc: 'Purchased for 300 Sankalp Coins', amount: 1, date: 'Marketplace' });
-            }
-
-            // 5. Debits (Spent / Deployed)
-            sortedDates.forEach(dStr => {
-                if (db[dStr] && db[dStr][person] && db[dStr][person].kavachUsed) {
-                    transactions.push({ type: 'debit', label: 'Shield Deployed', desc: `Protected active streaks on ${dStr}`, amount: 1, date: dStr });
-                }
-            });
-
-            const contentEl = document.getElementById('kavachHistoryContent');
-            document.getElementById('kavachHistoryTitle').innerText = `🛡️ ${person.toUpperCase()} — Kavach Shield Ledger (Credits & Debits)`;
-
-            if (transactions.length === 0) {
-                contentEl.innerHTML = `<p class="italic text-gray-500 py-3 text-center">No transaction records found.</p>`;
-            } else {
-                contentEl.innerHTML = transactions.map(tx => {
-                    let isCredit = tx.type === 'credit';
-                    let badgeClass = isCredit ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-red-100 text-red-800 border-red-300';
-                    let sign = isCredit ? '+' : '-';
-                    return `
-                        <div class="p-2.5 rounded-xl border flex justify-between items-center ${isCredit ? 'bg-emerald-50/40 border-emerald-200' : 'bg-red-50/40 border-red-200'}">
-                            <div>
-                                <p class="font-bold text-slate-900 text-xs">${tx.label} <span class="text-[10px] text-slate-500 font-normal">(${tx.date})</span></p>
-                                <p class="text-[11px] text-slate-600">${tx.desc}</p>
-                            </div>
-                            <span class="font-black text-xs px-2 py-1 rounded-lg border ${badgeClass}">${sign}${tx.amount} Shield</span>
-                        </div>
-                    `;
-                }).join('');
-            }
-            document.getElementById('kavachHistoryModal').classList.remove('hidden');
         }
 
         function loadDayUI() {
@@ -1126,8 +1044,9 @@
                     }
                 }
 
-                if (!wallet[person]) wallet[person] = { coinsSpent: 0, kavach: 4, kavachBought: 0, kavachSpent: 0 };
+                if (!wallet[person]) wallet[person] = { coinsSpent: 0, kavachBought: 0 };
                 let baseKavach = 4;
+                let manualBonus = 1; // Awarded +1 Kavach shield today
 
                 // Monthly free drop: +1 on the 1st of every month (distinct YYYY-MM from sortedDates or up to current month)
                 let uniqueMonths = new Set();
@@ -1149,7 +1068,7 @@
                     }
                 });
 
-                let totalKavach = baseKavach + monthlyFreeKavach + consecutiveKavachEarned + boughtKavach - spentKavach;
+                let totalKavach = baseKavach + manualBonus + monthlyFreeKavach + consecutiveKavachEarned + boughtKavach - spentKavach;
                 if (totalKavach < 0) totalKavach = 0;
                 wallet[person].kavach = totalKavach;
 
@@ -1344,7 +1263,7 @@
             }
         }
 
-        function toggleEconomyModal() {
+        function toggleEconModal() {
             document.getElementById('economyModal').classList.toggle('hidden');
         }
 
@@ -1689,7 +1608,6 @@
             } catch (err) {
                 alert("❌ Unable to copy to clipboard.");
             }
-            document.body.removeChild(err => {});
             document.body.removeChild(textArea);
         }
 
