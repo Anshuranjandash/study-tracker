@@ -39,14 +39,14 @@
             </div>
         </div>
 
-        <!-- SECTION: SANKALP COIN WALLET, RANKS & KAVACH -->
+        <!-- SECTION: SANKALP COIN WALLET & RANKS -->
         <div class="mb-6 bg-gradient-to-r from-amber-100/90 via-orange-100/70 to-amber-100/90 p-5 rounded-2xl border-2 border-amber-300 shadow-sm">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-base font-extrabold text-amber-950 flex items-center gap-2">
                     🪙 Sankalp Coin Wallet & Bureaucratic Ranks
                 </h2>
                 <button onclick="toggleEconomyModal()" class="text-xs font-bold text-amber-800 bg-white/80 hover:bg-white px-2.5 py-1 rounded-lg border border-amber-300 shadow-xs transition">
-                    📜 Rules & Rewards Guide
+                    📜 Rules & Guide
                 </button>
             </div>
 
@@ -58,9 +58,9 @@
                             <p class="font-extrabold text-indigo-800 text-sm">ANSHU</p>
                             <span id="anshuTier" class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-gray-100 text-gray-700">Aspirant</span>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right cursor-pointer hover:opacity-80 transition" onclick="showCoinLedger('anshu')" title="Click to view detailed coin ledger">
                             <span id="anshuCoins" class="text-xl font-black text-amber-600">0</span>
-                            <span class="text-xs font-bold text-amber-800">Coins</span>
+                            <span class="text-xs font-bold text-amber-800">Coins 📊</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs font-medium">
@@ -73,15 +73,6 @@
                             <strong id="anshuTargetStreak" class="text-indigo-900 text-sm">0 days</strong>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center pt-1 text-xs">
-                        <div>
-                            <span class="text-slate-600 font-semibold cursor-pointer hover:underline text-blue-900" onclick="showKavachHistory('anshu')" title="Click to view Kavach ledger">Kavach Shield: <strong id="anshuKavach" class="text-blue-600">🛡️ 3</strong></span> <span id="anshuActivatedBadge" class="hidden text-[10px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded ml-1">Activated</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="useKavach('anshu')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
-                            <button onclick="buyKavach('anshu')" class="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-100 transition">Buy (300c)</button>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- AASTHA WALLET -->
@@ -91,9 +82,9 @@
                             <p class="font-extrabold text-rose-800 text-sm">AASTHA</p>
                             <span id="aasthaTier" class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-gray-100 text-gray-700">Aspirant</span>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right cursor-pointer hover:opacity-80 transition" onclick="showCoinLedger('aastha')" title="Click to view detailed coin ledger">
                             <span id="aasthaCoins" class="text-xl font-black text-amber-600">0</span>
-                            <span class="text-xs font-bold text-amber-800">Coins</span>
+                            <span class="text-xs font-bold text-amber-800">Coins 📊</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs font-medium">
@@ -104,15 +95,6 @@
                         <div class="bg-rose-50/60 p-2 rounded-lg">
                             <span class="text-slate-500 block text-[10px]">TARGET STREAK</span>
                             <strong id="aasthaTargetStreak" class="text-rose-900 text-sm">0 days</strong>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center pt-1 text-xs">
-                        <div>
-                            <span class="text-slate-600 font-semibold cursor-pointer hover:underline text-blue-900" onclick="showKavachHistory('aastha')" title="Click to view Kavach ledger">Kavach Shield: <strong id="aasthaKavach" class="text-blue-600">🛡️ 4</strong></span> <span id="aasthaActivatedBadge" class="hidden text-[10px] bg-blue-100 text-blue-800 font-extrabold px-1.5 py-0.5 rounded ml-1">Activated</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <button onclick="useKavach('aastha')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-100 transition">Use</button>
-                            <button onclick="buyKavach('aastha')" class="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-1 rounded hover:bg-amber-100 transition">Buy (300c)</button>
                         </div>
                     </div>
                 </div>
@@ -212,13 +194,38 @@
                     <select id="graphViewToggle" onchange="renderGraph()" class="bg-amber-50 border border-amber-300 rounded-xl px-3 py-1.5 text-sm font-bold text-amber-900 focus:outline-none shadow-sm">
                         <option value="weekly">Weekly (Sun - Sat)</option>
                         <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="yearly">Yearly</option>
+                        <option value="yearly">Yearly (Jan - Dec)</option>
                     </select>
                 </div>
             </div>
+            <div id="weeklySummaryBox" class="hidden mb-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-amber-50 to-rose-50 border border-amber-300 shadow-xs flex flex-col sm:flex-row justify-around items-center gap-4 text-xs font-bold text-slate-800"></div>
             <div class="relative h-80 w-full">
                 <canvas id="studyTimeChart"></canvas>
+            </div>
+            
+            <!-- 3-DAY SLOT CHALLENGE PROGRESS BAR BOX -->
+            <div class="mt-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-50/70 via-amber-50/50 to-rose-50/70 border border-amber-300 shadow-xs space-y-3">
+                <h4 class="text-xs font-extrabold text-amber-950 flex items-center gap-1.5">🔥 Active 3-Day Slot Challenge (Anshu: 15h | Aastha: 19h)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <div class="flex justify-between font-bold text-indigo-900 mb-1">
+                            <span id="anshu3DayLabel">Anshu: 0.0 / 15 hrs</span>
+                            <span id="anshu3DayPct">0%</span>
+                        </div>
+                        <div class="w-full bg-indigo-100 rounded-full h-3 overflow-hidden border border-indigo-200">
+                            <div id="anshu3DayBar" class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-bold text-rose-900 mb-1">
+                            <span id="aastha3DayLabel">Aastha: 0.0 / 19 hrs</span>
+                            <span id="aastha3DayPct">0%</span>
+                        </div>
+                        <div class="w-full bg-rose-100 rounded-full h-3 overflow-hidden border border-rose-200">
+                            <div id="aastha3DayBar" class="bg-rose-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -248,71 +255,6 @@
                     </thead>
                     <tbody id="monthlyTableBody"></tbody>
                 </table>
-            </div>
-        </div>
-
-        <!-- SECTION 4: MILESTONE BOARD -->
-        <div class="mb-8 bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4">
-            <h2 class="text-lg font-extrabold text-amber-900 flex items-center gap-2">🎯 Milestone Board</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- ANSHU STREAKS -->
-                <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-200 space-y-3">
-                    <p class="font-extrabold text-indigo-900 text-sm border-b border-indigo-200 pb-1">Anshu's Milestone Board</p>
-                    <div id="anshuStreaksBoard" class="grid grid-cols-2 gap-2 text-xs"></div>
-                </div>
-
-                <!-- AASTHA STREAKS -->
-                <div class="bg-rose-50/70 p-4 rounded-xl border border-rose-200 space-y-3">
-                    <p class="font-extrabold text-rose-900 text-sm border-b border-rose-200 pb-1">Aastha's Milestone Board</p>
-                    <div id="aasthaStreaksBoard" class="grid grid-cols-2 gap-2 text-xs"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 5: WEEKLY TARGET GOALS BOX (2ND LAST BOX) -->
-        <div class="mb-8 bg-amber-50/70 p-5 rounded-2xl border border-amber-200 space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div class="flex items-center gap-2">
-                    <h2 class="text-lg font-extrabold text-amber-900">📅 Weekly Target Goals</h2>
-                    <span id="weeklyDateRangeDisplay" class="text-xs bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-lg"></span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold text-amber-900">Month & Week:</label>
-                    <select id="weekSelector" onchange="switchSelectedWeek()" class="bg-white border border-amber-300 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-900 shadow-sm"></select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- ANSHU WEEKLY -->
-                <div class="bg-white p-4 rounded-xl border border-indigo-100 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-indigo-700 text-sm">ANSHU — Weekly Goals</h3>
-                        <span id="anshuWeeklyPercent" class="text-xs font-extrabold text-indigo-900 bg-indigo-50 px-2.5 py-0.5 rounded-full">0% Done</span>
-                    </div>
-                    <table class="w-full text-left text-sm">
-                        <tbody id="anshuWeeklyTableBody"></tbody>
-                    </table>
-                    <div id="anshuWeeklyInputContainer" class="flex gap-2">
-                        <input type="text" id="anshuWeeklyInput" placeholder="Add goal (upload future weeks)..." class="flex-1 text-xs border rounded-lg px-2.5 py-1.5 focus:outline-none">
-                        <button onclick="addWeeklyTarget('anshu')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+</button>
-                    </div>
-                </div>
-
-                <!-- AASTHA WEEKLY -->
-                <div class="bg-white p-4 rounded-xl border border-rose-100 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-rose-700 text-sm">AASTHA — Weekly Goals</h3>
-                        <span id="aasthaWeeklyPercent" class="text-xs font-extrabold text-rose-900 bg-rose-50 px-2.5 py-0.5 rounded-full">0% Done</span>
-                    </div>
-                    <table class="w-full text-left text-sm">
-                        <tbody id="aasthaWeeklyTableBody"></tbody>
-                    </table>
-                    <div id="aasthaWeeklyInputContainer" class="flex gap-2">
-                        <input type="text" id="aasthaWeeklyInput" placeholder="Add goal (upload future weeks)..." class="flex-1 text-xs border rounded-lg px-2.5 py-1.5 focus:outline-none">
-                        <button onclick="addWeeklyTarget('aastha')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">+</button>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -377,23 +319,23 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- KAVACH HISTORY MODAL -->
-    <div id="kavachHistoryModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-amber-200 space-y-4">
-            <h3 id="kavachHistoryTitle" class="font-extrabold text-blue-900 text-lg flex items-center gap-2">
-                🛡️ Kavach Usage History
-            </h3>
-            <div id="kavachHistoryContent" class="space-y-2 text-xs text-slate-700 max-h-60 overflow-y-auto"></div>
-            <div class="text-right pt-2">
-                <button onclick="toggleKavachHistoryModal()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow">Close</button>
+        <!-- BOTTOM DATA MANAGEMENT & BACKUP FOOTER -->
+        <div class="mt-8 pt-4 border-t border-amber-200 flex flex-col sm:flex-row justify-between items-center text-xs text-amber-900 gap-3">
+            <span class="font-semibold">💾 Data Backup & Restore</span>
+            <div class="flex items-center gap-3">
+                <button onclick="exportJSONBackup()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1.5 rounded-lg border border-amber-300 transition shadow-xs flex items-center gap-1">
+                    📥 Export JSON
+                </button>
+                <label class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-1.5 rounded-lg border border-amber-300 transition shadow-xs cursor-pointer flex items-center gap-1">
+                    📂 Import JSON <input type="file" id="importFile" accept=".json" onchange="importJSONBackup(event)" class="hidden">
+                </label>
             </div>
         </div>
+
     </div>
 
     <!-- RULES & REWARDS MODAL -->
-    <div id="economyModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div id="economyModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-amber-200 space-y-4 max-h-[85vh] overflow-y-auto">
             <h3 class="font-extrabold text-amber-900 text-lg flex items-center gap-2">
                 📜 Sankalp Economy & Rules Guide
@@ -401,42 +343,45 @@
             
             <div class="space-y-3 text-xs text-slate-700">
                 <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
-                    <p class="font-bold text-amber-900 mb-1">⏱️ Hourly & Target Coins:</p>
-                    <ul class="list-disc pl-5 space-y-0.5">
-                        <li>3 hrs = <b>10 coins</b> | 5 hrs = <b>20 coins</b></li>
-                        <li><b>Anshu:</b> 6 hrs = <b>50 coins</b> | 7 hrs = <b>100 coins</b></li>
-                        <li><b>Aastha:</b> 7 hrs = <b>50 coins</b> | 8 hrs = <b>100 coins</b></li>
-                        <li>100% Daily Target Met = <b>+20 coins</b></li>
-                        <li>Weekly 80%+ = <b>50 coins</b> | 90%+ = <b>150 coins</b> | 100% = <b>300 coins</b></li>
-                    </ul>
-                </div>
-
-                <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 space-y-2">
-                    <p class="font-bold text-blue-900 mb-1">🛡️ Kavach Shield Rules:</p>
+                    <p class="font-bold text-amber-900 mb-1">🪙 Simple Coin Earning Rules:</p>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><b>Monthly Free Drop:</b> Receive <b>+1 Free Shield</b> automatically on the 1st of every month.</li>
-                        <li><b>How to Buy:</b> Spend <b>300 Sankalp Coins</b> to buy 1 shield instantly.</li>
-                        <li><b>How to Earn Free Shields:</b> Study 2 consecutive days with a combined total of <b>11+ hours</b> (Anshu) or <b>14+ hours</b> (Aastha) to earn <b>+1 Shield</b>.</li>
-                        <li><b>Back-date Usage:</b> If you forgot to apply a shield yesterday, you can still apply it to Yesterday or Today within the 48-hour window.</li>
-                        <li><b>Security:</b> Requires your PIN (1234) to use.</li>
+                        <li><b>Weekly Study Hours:</b> Anshu = 5 coins/hr | Aastha = 4 coins/hr (Auto-Credited)</li>
+                        <li><b>Daily Study Hour Based (Anshu):</b> 3hr = 20 | 4hr = 30 | 5hr = 50 | 6hr = 80 | 7hr = 100</li>
+                        <li><b>Daily Study Hour Based (Aastha):</b> 3hr = 10 | 4hr = 20 | 5hr = 30 | 6hr = 50 | 7hr = 80 | 8hr = 100</li>
+                        <li><b>3-Day Slot Challenge:</b> Anshu (15 hrs total in slot) = 200 coins | Aastha (19 hrs total in slot) = 200 coins</li>
+                        <li><b>90% Daily Target Met:</b> +20 coins</li>
+                        <li><b>100% Daily Target Met:</b> +40 coins</li>
                     </ul>
                 </div>
 
                 <div class="bg-emerald-50 p-3 rounded-xl border border-amber-900">
                     <p class="font-bold text-amber-900 mb-1">🎖️ Bureaucratic Ranks (Tiers):</p>
                     <ul class="list-disc pl-5 space-y-0.5">
-                        <li><b>0 - 1,000 Coins:</b> Aspirant</li>
-                        <li>🥉 <b>1,001 - 3,000 Coins:</b> LBSNAA Trainee</li>
-                        <li>🥈 <b>3,001 - 6,000 Coins:</b> SDM</li>
-                        <li>🥇 <b>6,001 - 8,000 Coins:</b> DM</li>
-                        <li>🎖️ <b>8,001 - 10,000 Coins:</b> Joint Secretary</li>
-                        <li>💎 <b>10,000+ Coins:</b> Cabinet Secretary</li>
+                        <li><b>0 - 3,000 Coins:</b> Aspirant</li>
+                        <li>🥉 <b>3,001 - 6,000 Coins:</b> LBSNAA Trainee</li>
+                        <li>🥈 <b>6,001 - 10,000 Coins:</b> SDM</li>
+                        <li>🥇 <b>10,001 - 15,000 Coins:</b> DM</li>
+                        <li>🎖️ <b>15,001 - 20,000 Coins:</b> Joint Secretary</li>
+                        <li>💎 <b>20,001+ Coins:</b> Cabinet Secretary</li>
                     </ul>
                 </div>
             </div>
 
             <div class="text-right pt-2">
                 <button onclick="toggleEconomyModal()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COIN LEDGER MODAL -->
+    <div id="coinLedgerModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-amber-200 space-y-4 max-h-[85vh] overflow-y-auto">
+            <h3 id="coinLedgerTitle" class="font-extrabold text-amber-900 text-lg flex items-center gap-2">
+                🪙 Coin Earnings Ledger
+            </h3>
+            <div id="coinLedgerContent" class="space-y-2 text-xs text-slate-700 max-h-96 overflow-y-auto"></div>
+            <div class="text-right pt-2">
+                <button onclick="toggleCoinLedgerModal()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow">Close</button>
             </div>
         </div>
     </div>
@@ -526,16 +471,27 @@
             if (!cloudMode) {
                 let db = getDB();
                 if (!db["2026-09-22"]) db["2026-09-22"] = {};
-                db["2026-09-22"].anshu = {
-                    hours: 4.32,
-                    topics: [
-                        { name: "Sociology - Class 15 Lecture", status: "Completed" },
-                        { name: "USA Iran Conflict CA", status: "Completed" },
-                        { name: "Supreme Court - PYQ + Flashcard", status: "Completed" },
-                        { name: "Judicial Review", status: "Completed" }
-                    ]
-                };
-                localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+                if (!db["2026-09-22"].anshu || !db["2026-09-22"].anshu.topics || db["2026-09-22"].anshu.topics.length === 0) {
+                    db["2026-09-22"].anshu = {
+                        hours: 4.32,
+                        topics: [
+                            { name: "Sociology - Class 15 Lecture", status: "Completed" },
+                            { name: "USA Iran Conflict CA", status: "Completed" },
+                            { name: "Supreme Court - PYQ + Flashcard", status: "Completed" },
+                            { name: "Judicial Review", status: "Completed" }
+                        ]
+                    };
+                    db["2026-09-22"].aastha = {
+                        hours: 6.25,
+                        topics: [
+                            { name: "Sociology lecture", status: "Completed" },
+                            { name: "Mathematics lecture+practice", status: "Completed" },
+                            { name: "English grammar revision", status: "Pending" },
+                            { name: "History early medieval", status: "Completed" }
+                        ]
+                    };
+                    localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+                }
                 globalDB = db;
             }
             loadDayUI();
@@ -588,7 +544,11 @@
         yesterdayObj.setDate(yesterdayObj.getDate() - 1);
         const yesterdayStr = getLocalDateString(yesterdayObj);
 
-        document.getElementById('activeDate').value = todayStr;
+        let initialDb = getDB();
+        let sortedDatesInit = Object.keys(initialDb).filter(k => !k.startsWith('_')).sort();
+        let defaultDate = sortedDatesInit.length > 0 ? sortedDatesInit[sortedDatesInit.length - 1] : todayStr;
+
+        document.getElementById('activeDate').value = defaultDate;
         document.getElementById('summaryCardDate').value = todayStr;
 
         function getWeekKey(d = new Date()) {
@@ -607,16 +567,18 @@
             return `${monthName} (${start.toLocaleDateString('en-US', {month:'short', day:'numeric'})} - ${end.toLocaleDateString('en-US', {month:'short', day:'numeric'})})`;
         }
 
-        function getWeeklyData(weekKey) {
-            const db = getDB();
-            if (!db._weekly) db._weekly = {};
-            if (!db._weekly[weekKey]) {
-                db._weekly[weekKey] = {
-                    anshu: [],
-                    aastha: []
-                };
+        function getWeeklyHours(db, person, weekKey) {
+            let start = new Date(weekKey + 'T00:00:00');
+            let total = 0;
+            for (let i = 0; i < 7; i++) {
+                let targetDate = new Date(start.getTime() + (i * 24 * 60 * 60 * 1000));
+                let dStr = getLocalDateString(targetDate);
+                let dayObj = db[dStr];
+                if (dayObj && dayObj[person]) {
+                    total += (dayObj[person].hours || 0);
+                }
             }
-            return db._weekly[weekKey];
+            return total;
         }
 
         function getDayData(dateStr) {
@@ -670,18 +632,6 @@
             const selectedDate = document.getElementById('activeDate').value;
             const dayData = getDayData(selectedDate);
 
-            // Update Activated badge for active date
-            ['anshu', 'aastha'].forEach(p => {
-                const badge = document.getElementById(`${p}ActivatedBadge`);
-                if (badge) {
-                    if (dayData[p] && dayData[p].kavachUsed) {
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                }
-            });
-
             const aH = dayData.anshu.hours || 0;
             const aIntH = Math.floor(aH);
             const aIntM = Math.round((aH - aIntH) * 60);
@@ -696,8 +646,6 @@
 
             renderPersonTable('anshu', dayData.anshu.topics);
             renderPersonTable('aastha', dayData.aastha.topics);
-            populateWeekSelector();
-            renderWeeklyTargets();
             calculateAndRenderEconomy();
             renderGraph();
             renderHistoricalTables();
@@ -788,160 +736,9 @@
         }
 
         // ==========================================
-        // 📅 WEEKLY TARGETS LOGIC
-        // ==========================================
-        function populateWeekSelector() {
-            const selector = document.getElementById('weekSelector');
-            const currentWeekKey = getWeekKey();
-            const db = getDB();
-            
-            let weeks = new Set([currentWeekKey]);
-            let now = new Date();
-            for (let i = 1; i <= 6; i++) {
-                let futureDate = new Date(now);
-                futureDate.setDate(now.getDate() + (i * 7));
-                weeks.add(getWeekKey(futureDate));
-            }
-
-            if (db._weekly) {
-                Object.keys(db._weekly).forEach(wk => weeks.add(wk));
-            }
-
-            let sortedWeeks = Array.from(weeks).sort();
-            let currentVal = selector.value || currentWeekKey;
-
-            selector.innerHTML = '';
-            sortedWeeks.forEach(wk => {
-                let opt = document.createElement('option');
-                opt.value = wk;
-                opt.text = getWeekRangeFormatted(wk);
-                if (wk === currentVal) opt.selected = true;
-                selector.appendChild(opt);
-            });
-        }
-
-        function getSelectedWeekKey() {
-            const selector = document.getElementById('weekSelector');
-            return selector ? selector.value : getWeekKey();
-        }
-
-        function addWeeklyTarget(person) {
-            if (!isEditor) {
-                alert("Please log in to Editor Mode.");
-                return;
-            }
-            const currentWeekKey = getWeekKey();
-            const selectedWk = getSelectedWeekKey();
-
-            if (selectedWk < currentWeekKey) {
-                alert("❌ You cannot add targets for past weeks.");
-                return;
-            }
-
-            const input = document.getElementById(person + 'WeeklyInput');
-            const val = input.value.trim();
-            if (val !== '') {
-                const db = getDB();
-                if (!db._weekly) db._weekly = {};
-                if (!db._weekly[selectedWk]) db._weekly[selectedWk] = { anshu: [], aastha: [] };
-                
-                db._weekly[selectedWk][person].push({ name: val, status: 'Pending' });
-                saveDB(db);
-                input.value = '';
-            }
-        }
-
-        function deleteWeeklyTarget(person, index) {
-            if (!isEditor) return;
-            const currentWeekKey = getWeekKey();
-            const selectedWk = getSelectedWeekKey();
-
-            if (selectedWk <= currentWeekKey) {
-                alert("❌ Weekly targets cannot be deleted once the week has started or passed!");
-                return;
-            }
-
-            if (!confirm("Are you sure you want to delete this weekly goal?")) return;
-
-            const db = getDB();
-            if (db._weekly && db._weekly[selectedWk] && db._weekly[selectedWk][person]) {
-                db._weekly[selectedWk][person].splice(index, 1);
-                saveDB(db);
-            }
-        }
-
-        function updateWeeklyStatus(person, index, status) {
-            if (!isEditor) return;
-            const currentWeekKey = getWeekKey();
-            const selectedWk = getSelectedWeekKey();
-
-            if (selectedWk !== currentWeekKey) {
-                alert("❌ Goal status can only be updated during the active current week!");
-                return;
-            }
-
-            const db = getDB();
-            if (db._weekly && db._weekly[selectedWk] && db._weekly[selectedWk][person]) {
-                db._weekly[selectedWk][person][index].status = status;
-                saveDB(db);
-            }
-        }
-
-        function switchSelectedWeek() {
-            renderWeeklyTargets();
-        }
-
-        function renderWeeklyTargets() {
-            const selectedWk = getSelectedWeekKey();
-            const currentWk = getWeekKey();
-            document.getElementById('weeklyDateRangeDisplay').innerText = `(${getWeekRangeFormatted(selectedWk)})`;
-
-            const db = getDB();
-            const weeklyObj = (db._weekly && db._weekly[selectedWk]) ? db._weekly[selectedWk] : { anshu: [], aastha: [] };
-            
-            const isFutureWeek = selectedWk > currentWk;
-            const isCurrentWeek = selectedWk === currentWk;
-            const canAddDelete = isEditor && isFutureWeek;
-            const canUpdateStatus = isEditor && isCurrentWeek;
-
-            ['anshu', 'aastha'].forEach(person => {
-                const tbody = document.getElementById(person + 'WeeklyTableBody');
-                tbody.innerHTML = '';
-                const targets = weeklyObj[person] || [];
-                let completed = 0;
-
-                if (targets.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" class="text-center py-2 text-xs text-gray-400 italic">No weekly goals set for this week.</td></tr>`;
-                } else {
-                    targets.forEach((t, idx) => {
-                        if (t.status === 'Completed') completed++;
-                        let tr = document.createElement('tr');
-                        tr.className = "border-b border-gray-100 text-xs";
-                        tr.innerHTML = `
-                            <td class="py-2 pr-2 font-medium">${t.name}</td>
-                            <td class="py-2 w-28">
-                                <select ${!canUpdateStatus ? 'disabled' : ''} onchange="updateWeeklyStatus('${person}', ${idx}, this.value)" class="text-xs border rounded p-1 w-full font-bold ${t.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                                    <option value="Pending" ${t.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="Completed" ${t.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                                </select>
-                            </td>
-                            <td class="py-2 text-right">
-                                ${canAddDelete ? `<button onclick="deleteWeeklyTarget('${person}', ${idx})" class="text-red-400 hover:text-red-700 font-bold px-1">✕</button>` : ''}
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
-
-                let pct = targets.length > 0 ? Math.round((completed / targets.length) * 100) : 0;
-                document.getElementById(`${person}WeeklyPercent`).innerText = pct + '% Done';
-            });
-        }
-
-        // ==========================================
         // 🪙 ECONOMY, TIER RANKS & CLAIMABLE STREAKS
         // ==========================================
-        function calculateSimpleStreak(db, person, reqHour, respectKavach = true) {
+        function calculateSimpleStreak(db, person, reqHour) {
             let streak = 0;
             let d = new Date();
             for (let i = 0; i < 365; i++) {
@@ -950,11 +747,10 @@
                 let asp = dayObj && dayObj[person] ? dayObj[person] : { hours: 0, topics: [] };
                 let h = asp.hours || 0;
                 
-                let met = respectKavach ? (h >= reqHour || asp.kavachUsed) : (h >= reqHour);
-                if (met) {
+                if (h >= reqHour) {
                     streak++;
                 } else {
-                    if (i === 0 && !met) {
+                    if (i === 0 && h < reqHour) {
                         d.setDate(d.getDate() - 1);
                         continue;
                     }
@@ -965,7 +761,7 @@
             return streak;
         }
 
-        function calculateTargetStreakSimple(db, person, respectKavach = true) {
+        function calculateTargetStreakSimple(db, person) {
             let streak = 0;
             let d = new Date();
             for (let i = 0; i < 365; i++) {
@@ -975,11 +771,10 @@
                 let topics = asp.topics || [];
                 let is100 = topics.length > 0 && topics.every(t => t.status === 'Completed');
                 
-                let met = respectKavach ? (is100 || asp.kavachUsed) : is100;
-                if (met) {
+                if (is100) {
                     streak++;
                 } else {
-                    if (i === 0 && !met) {
+                    if (i === 0 && !is100) {
                         d.setDate(d.getDate() - 1);
                         continue;
                     }
@@ -990,88 +785,26 @@
             return streak;
         }
 
-        function getSustainingStreakSimple(db, person, targetHrs) {
-            return calculateSimpleStreak(db, person, targetHrs);
-        }
-
         function calculateAndRenderEconomy() {
             const db = getDB();
-            let wallet = db._wallet || {
-                anshu: { coinsSpent: 0, kavach: 3, kavachBought: 0, kavachSpent: 1 },
-                aastha: { coinsSpent: 0, kavach: 4, kavachBought: 0, kavachSpent: 0 }
-            };
-
             const sortedDates = Object.keys(db).filter(k => !k.startsWith('_')).sort();
             const weekKey = getWeekKey();
-            const weeklyObj = getWeeklyData(weekKey);
 
             ['anshu', 'aastha'].forEach(person => {
                 let totalCoinsEarned = 0;
+                let transactions = [];
 
-                // Check 2-day consecutive total hours milestone for Kavach (Anshu: 11h total, Aastha: 14h total over 2 consecutive calendar days)
-                let targetTotal2Days = person === 'anshu' ? 11.0 : 14.0;
-                let consecutiveKavachEarned = 0;
-                let currentPairProgress = 0; // for UI display
-
-                for (let i = 0; i < sortedDates.length - 1; i++) {
-                    let d1 = new Date(sortedDates[i]);
-                    let d2 = new Date(sortedDates[i+1]);
-                    let diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
-                    if (diffDays === 1) {
-                        let day1Obj = db[sortedDates[i]][person] || { hours: 0 };
-                        let day2Obj = db[sortedDates[i+1]][person] || { hours: 0 };
-                        let h1 = day1Obj.hours || 0;
-                        let h2 = day2Obj.hours || 0;
-                        if ((h1 + h2) >= targetTotal2Days) {
-                            consecutiveKavachEarned++;
-                            i++; // non-overlapping pairs
-                        }
-                    }
+                // 1. Weekly total study hour based (Anshu: 5c/hr, Aastha: 4c/hr)
+                let weeklyHours = getWeeklyHours(db, person, weekKey);
+                let weeklyRate = person === 'anshu' ? 5 : 4;
+                let weeklyCoins = Math.round(weeklyHours * weeklyRate);
+                if (weeklyCoins > 0) {
+                    totalCoinsEarned += weeklyCoins;
+                    transactions.push({ date: weekKey, desc: `Weekly Study (${weeklyHours.toFixed(1)} hrs @ ${weeklyRate}c/hr)`, coins: weeklyCoins });
                 }
 
-                // Calculate progress for the latest pair (or today + yesterday)
-                let latestPairTotal = 0;
-                let latestPairMet = false;
-                if (sortedDates.length >= 2) {
-                    let lastDateStr = sortedDates[sortedDates.length - 1];
-                    let prevDateStr = sortedDates[sortedDates.length - 2];
-                    let d1 = new Date(prevDateStr);
-                    let d2 = new Date(lastDateStr);
-                    if (Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) === 1) {
-                        let h1 = (db[prevDateStr][person] && db[prevDateStr][person].hours) || 0;
-                        let h2 = (db[lastDateStr][person] && db[lastDateStr][person].hours) || 0;
-                        latestPairTotal = h1 + h2;
-                        if (latestPairTotal >= targetTotal2Days) latestPairMet = true;
-                    }
-                }
-
-                if (!wallet[person]) wallet[person] = { coinsSpent: 0, kavachBought: 0 };
-                let baseKavach = 4;
-                let manualBonus = 1;
-                
-                // Monthly free drop: +1 on the 1st of every month (distinct YYYY-MM from sortedDates or up to current month)
-                let uniqueMonths = new Set();
-                sortedDates.forEach(dStr => {
-                    let parts = dStr.split('-');
-                    if (parts.length === 3) uniqueMonths.add(`${parts[0]}-${parts[1]}`);
-                });
-                let nowParts = getLocalDateString().split('-');
-                uniqueMonths.add(`${nowParts[0]}-${nowParts[1]}`);
-                let monthlyFreeKavach = uniqueMonths.size;
-
-                let boughtKavach = wallet[person].kavachBought || 0;
-                
-                // Count spent Kavach dynamically by scanning all dates where kavachUsed is true
-                let spentKavach = 0;
-                sortedDates.forEach(dStr => {
-                    if (db[dStr] && db[dStr][person] && db[dStr][person].kavachUsed) {
-                        spentKavach++;
-                    }
-                });
-
-                let totalKavach = baseKavach + manualBonus + monthlyFreeKavach + consecutiveKavachEarned + boughtKavach - spentKavach;
-                if (totalKavach < 0) totalKavach = 0;
-                wallet[person].kavach = totalKavach;
+                // 2. Daily study hour based & Daily Target achievements
+                let dailyHoursArr = [];
 
                 sortedDates.forEach(dStr => {
                     const dayObj = db[dStr];
@@ -1079,277 +812,208 @@
                         const h = dayObj[person].hours || 0;
                         const topics = dayObj[person].topics || [];
                         const comp = topics.filter(t => t.status === 'Completed').length;
-                        const is100 = topics.length > 0 && comp === topics.length;
+                        const totalTopics = topics.length;
+                        let pct = totalTopics > 0 ? (comp / totalTopics) * 100 : 0;
 
+                        dailyHoursArr.push({ date: dStr, hours: h });
+
+                        // Daily Hour based coins
+                        let dailyHourCoins = 0;
                         if (person === 'anshu') {
-                            if (h >= 7) totalCoinsEarned += 100;
-                            else if (h >= 6) totalCoinsEarned += 50;
-                            else if (h >= 5) totalCoinsEarned += 20;
-                            else if (h >= 3) totalCoinsEarned += 10;
+                            if (h >= 7) dailyHourCoins = 100;
+                            else if (h >= 6) dailyHourCoins = 80;
+                            else if (h >= 5) dailyHourCoins = 50;
+                            else if (h >= 4) dailyHourCoins = 30;
+                            else if (h >= 3) dailyHourCoins = 20;
                         } else {
-                            if (h >= 8) totalCoinsEarned += 100;
-                            else if (h >= 7) totalCoinsEarned += 50;
-                            else if (h >= 5) totalCoinsEarned += 20;
-                            else if (h >= 3) totalCoinsEarned += 10;
+                            if (h >= 8) dailyHourCoins = 100;
+                            else if (h >= 7) dailyHourCoins = 80;
+                            else if (h >= 6) dailyHourCoins = 50;
+                            else if (h >= 5) dailyHourCoins = 30;
+                            else if (h >= 4) dailyHourCoins = 20;
+                            else if (h >= 3) dailyHourCoins = 10;
                         }
 
-                        if (is100) totalCoinsEarned += 20;
+                        if (dailyHourCoins > 0) {
+                            totalCoinsEarned += dailyHourCoins;
+                            transactions.push({ date: dStr, desc: `Daily Study Hours (${h} hrs)`, coins: dailyHourCoins });
+                        }
+
+                        // Daily Target achievement coins (90% -> 20c, 100% -> 40c)
+                        let targetCoins = 0;
+                        if (totalTopics > 0) {
+                            if (pct === 100) targetCoins = 40;
+                            else if (pct >= 90) targetCoins = 20;
+                        }
+                        if (targetCoins > 0) {
+                            totalCoinsEarned += targetCoins;
+                            transactions.push({ date: dStr, desc: `Daily Target Achievement (${Math.round(pct)}% completed)`, coins: targetCoins });
+                        }
                     }
                 });
 
-                let reqHour = person === 'anshu' ? 3.5 : 5.0;
-                // Wallet streaks show raw study data irrespective of Kavach
-                let activeHourStreak = calculateSimpleStreak(db, person, reqHour, false);
-                let activeTargetStreak = calculateTargetStreakSimple(db, person, false);
+                // 3. 3-Day Slot Consecutive Study Challenge with Date-Range Labels
+                let req3DayHours = person === 'anshu' ? 15.0 : 19.0;
+                let latest3DaySum = 0;
+                let activeSlotKey = "";
+                let activeSlotLabel = "";
 
-                // Milestone board streaks respect Kavach
-                let milestoneTargetStreak = calculateTargetStreakSimple(db, person, true);
+                let slotsMap = {};
+                sortedDates.forEach(dStr => {
+                    let dt = new Date(dStr + 'T00:00:00');
+                    if (!isNaN(dt)) {
+                        let yr = dt.getFullYear();
+                        let mo = dt.getMonth() + 1;
+                        let day = dt.getDate();
+                        let slotNum = Math.ceil(day / 3);
+                        if (slotNum > 10) slotNum = 10;
+                        
+                        let startDay = (slotNum - 1) * 3 + 1;
+                        let endDay = slotNum * 3;
+                        let lastDayOfMonth = new Date(yr, mo, 0).getDate();
+                        if (endDay > lastDayOfMonth) endDay = lastDayOfMonth;
 
-                let target4h = person === 'anshu' ? 4 : 6;
-                let target5h = person === 'anshu' ? 5 : 7;
+                        let slotKey = `${yr}-${String(mo).padStart(2,'0')}-S${slotNum}`;
+                        let slotLabel = `${startDay}-${endDay}`;
 
-                let streak7d_45 = getSustainingStreakSimple(db, person, target4h);
-                let streak7d_57 = getSustainingStreakSimple(db, person, target5h);
+                        if (!slotsMap[slotKey]) slotsMap[slotKey] = { totalHours: 0, lastDate: dStr, label: slotLabel };
+                        slotsMap[slotKey].totalHours += (db[dStr][person] && db[dStr][person].hours) || 0;
+                        slotsMap[slotKey].lastDate = dStr;
+                    }
+                });
 
-                // Weekly Goal Bonuses: 80%+=50c, 90%+=150c, 100%=300c
-                const wTargets = weeklyObj[person] || [];
-                if (wTargets.length > 0) {
-                    const wComp = wTargets.filter(t => t.status === 'Completed').length;
-                    const wPct = (wComp / wTargets.length) * 100;
-                    if (wPct === 100) totalCoinsEarned += 300;
-                    else if (wPct >= 90) totalCoinsEarned += 150;
-                    else if (wPct >= 80) totalCoinsEarned += 50;
+                let activeDateVal = document.getElementById('activeDate') ? document.getElementById('activeDate').value : getLocalDateString();
+                let activeDt = new Date(activeDateVal + 'T00:00:00');
+                if (isNaN(activeDt)) activeDt = new Date();
+                let tYr = activeDt.getFullYear();
+                let tMo = activeDt.getMonth() + 1;
+                let tDay = activeDt.getDate();
+                let tSlotNum = Math.ceil(tDay / 3);
+                if (tSlotNum > 10) tSlotNum = 10;
+                let tStartDay = (tSlotNum - 1) * 3 + 1;
+                let tEndDay = tSlotNum * 3;
+                let tLastDay = new Date(tYr, tMo, 0).getDate();
+                if (tEndDay > tLastDay) tEndDay = tLastDay;
+
+                activeSlotKey = `${tYr}-${String(tMo).padStart(2,'0')}-S${tSlotNum}`;
+                activeSlotLabel = `${tStartDay}-${tEndDay}`;
+
+                Object.keys(slotsMap).sort().forEach(slotKey => {
+                    let slot = slotsMap[slotKey];
+                    if (slotKey === activeSlotKey) {
+                        latest3DaySum = slot.totalHours;
+                    }
+                    if (slot.totalHours >= req3DayHours) {
+                        let alreadyCredited = transactions.some(tx => tx.desc.includes(`3-Day Slot Challenge (${slot.label})`));
+                        if (!alreadyCredited) {
+                            totalCoinsEarned += 200;
+                            transactions.push({ date: slot.lastDate, desc: `3-Day Slot Challenge (${slot.label}: ${slot.totalHours.toFixed(1)} / ${req3DayHours} hrs)`, coins: 200 });
+                        }
+                    }
+                });
+
+                if (latest3DaySum === 0 && slotsMap[activeSlotKey]) {
+                    latest3DaySum = slotsMap[activeSlotKey].totalHours;
+                } else if (latest3DaySum === 0) {
+                    let dayObj = db[activeDateVal];
+                    latest3DaySum = (dayObj && dayObj[person] && dayObj[person].hours) || 0;
                 }
 
-                let netCoins = totalCoinsEarned - (wallet[person] ? (wallet[person].coinsSpent || 0) : 0);
-                if (netCoins < 0) netCoins = 0;
+                // Update 3-Day Slot Progress Bar UI
+                let pct3Day = Math.min(Math.round((latest3DaySum / req3DayHours) * 100), 100);
+                const labelEl = document.getElementById(`${person}3DayLabel`);
+                const pctEl = document.getElementById(`${person}3DayPct`);
+                const barEl = document.getElementById(`${person}3DayBar`);
+                if (labelEl) labelEl.innerText = `${person.charAt(0).toUpperCase() + person.slice(1)} (${activeSlotLabel}): ${latest3DaySum.toFixed(1)} / ${req3DayHours} hrs`;
+                if (pctEl) pctEl.innerText = `${pct3Day}%`;
+                if (barEl) barEl.style.width = `${pct3Day}%`;
+
+                // Sort transactions with recent on top
+                transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (!db._coinLedger) db._coinLedger = {};
+                db._coinLedger[person] = transactions;
+
+                let reqHour = person === 'anshu' ? 3.5 : 5.0;
+                let activeHourStreak = calculateSimpleStreak(db, person, reqHour);
+                let activeTargetStreak = calculateTargetStreakSimple(db, person);
+
+                let netCoins = Math.round(totalCoinsEarned);
 
                 let tierName = "Aspirant";
                 let tierClass = "bg-gray-100 text-gray-700";
-                if (netCoins >= 10001) {
+                if (netCoins >= 20001) {
                     tierName = "💎 Cabinet Secretary";
                     tierClass = "bg-purple-100 text-purple-900 border border-purple-300";
-                } else if (netCoins >= 8001) {
+                } else if (netCoins >= 15001) {
                     tierName = "🎖️ Joint Secretary";
                     tierClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                } else if (netCoins >= 6001) {
+                } else if (netCoins >= 10001) {
                     tierName = "🥇 DM (Collector)";
                     tierClass = "bg-yellow-100 text-yellow-900 border border-yellow-300";
-                } else if (netCoins >= 3001) {
+                } else if (netCoins >= 6001) {
                     tierName = "🥈 SDM";
                     tierClass = "bg-slate-200 text-slate-800 border border-slate-300";
-                } else if (netCoins >= 1001) {
+                } else if (netCoins >= 3001) {
                     tierName = "🥉 LBSNAA Trainee";
                     tierClass = "bg-amber-100 text-amber-800 border border-amber-300";
                 }
 
-                document.getElementById(`${person}Coins`).innerText = netCoins;
-                document.getElementById(`${person}HourStreak`).innerText = `${activeHourStreak} days`;
-                document.getElementById(`${person}TargetStreak`).innerText = `${activeTargetStreak} days`;
-                document.getElementById(`${person}Kavach`).innerText = `🛡️ ${totalKavach}`;
+                const coinsEl = document.getElementById(`${person}Coins`);
+                const hourStreakEl = document.getElementById(`${person}HourStreak`);
+                const targetStreakEl = document.getElementById(`${person}TargetStreak`);
+                if (coinsEl) coinsEl.innerText = netCoins;
+                if (hourStreakEl) hourStreakEl.innerText = `${activeHourStreak} days`;
+                if (targetStreakEl) targetStreakEl.innerText = `${activeTargetStreak} days`;
                 
                 const tierEl = document.getElementById(`${person}Tier`);
-                tierEl.innerText = tierName;
-                tierEl.className = `text-[11px] font-extrabold px-2.5 py-0.5 rounded-md ${tierClass}`;
-
-                let s7_1 = Math.min(streak7d_45, 7);
-                let s7_2 = Math.min(streak7d_57, 7);
-                let s15_1 = Math.min(streak7d_45, 15);
-                let s15_2 = Math.min(streak7d_57, 15);
-                let s30_1 = Math.min(streak7d_45, 30);
-                let t10 = Math.min(milestoneTargetStreak, 10);
-
-                const boardEl = document.getElementById(`${person}StreaksBoard`);
-                let bHtml = `
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                        <span class="text-slate-400 block text-[10px]">7 DAYS (${target4h} HR+) [100c]</span>
-                        <strong class="text-indigo-900 text-xs">${s7_1}/7 days</strong>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                        <span class="text-slate-400 block text-[10px]">7 DAYS (${target5h} HR+) [200c]</span>
-                        <strong class="text-indigo-900 text-xs">${s7_2}/7 days</strong>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                        <span class="text-slate-400 block text-[10px]">15 DAYS (${target4h} HR+) [250c]</span>
-                        <strong class="text-indigo-900 text-xs">${s15_1}/15 days</strong>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                        <span class="text-slate-400 block text-[10px]">15 DAYS (${target5h} HR+) [400c]</span>
-                        <strong class="text-indigo-900 text-xs">${s15_2}/15 days</strong>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                        <span class="text-slate-400 block text-[10px]">30 DAYS (${target4h} HR+) [600c]</span>
-                        <strong class="text-indigo-900 text-xs">${s30_1}/30 days</strong>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                        <span class="text-slate-400 block text-[10px]">10 DAYS 100% TARGET [300c]</span>
-                        <strong class="text-indigo-900 text-xs">${t10}/10 days</strong>
-                    </div>
-                    <div class="bg-white p-2.5 rounded-lg border border-indigo-100 col-span-2 bg-amber-50/50 border-amber-200">
-                        <span class="text-amber-800 block text-[10px] font-bold">🛡️ KAVACH MILESTONE (2-DAY ${person === 'anshu' ? '11H' : '14H'} TOTAL) [+1 Shield]</span>
-                        <strong class="text-amber-900 text-xs">${latestPairTotal.toFixed(1)} / ${targetTotal2Days} hrs ${latestPairMet ? '✅ Completed!' : '(Active Pair)'}</strong>
-                    </div>
-                `;
-                boardEl.innerHTML = bHtml;
-            });
-        }
-
-        function getSustainingStreak(history, targetHrs) {
-            let currentStreak = 0;
-            for (let i = history.length - 1; i >= 0; i--) {
-                if (history[i].hours >= targetHrs) {
-                    currentStreak++;
-                } else if (history[i].kavachUsed) {
-                    currentStreak++;
-                } else {
-                    break;
-                }
-            }
-            return currentStreak;
-        }
-
-        function useKavach(person) {
-            if (!isEditor) {
-                alert("Please log in to Editor Mode first.");
-                return;
-            }
-            const selectedDate = document.getElementById('activeDate').value;
-            if (selectedDate !== todayStr && selectedDate !== yesterdayStr) {
-                alert("❌ Kavach can only be applied to Today or Yesterday (48-hour editing window).");
-                return;
-            }
-
-            const pin = prompt(`🔒 Security Verification: Enter Passcode for ${person.toUpperCase()} to authorize Kavach usage for ${selectedDate} (Passcode: 1234):`);
-            if (pin !== DEFAULT_PIN) {
-                alert("❌ Incorrect Passcode. Kavach usage canceled.");
-                return;
-            }
-
-            const db = getDB();
-            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 4, coinsSpent: 0 } };
-
-            if ((db._wallet[person].kavach || 3) <= 0) {
-                alert(`❌ No Kavach shields available for ${person.toUpperCase()}.`);
-                return;
-            }
-
-            if (confirm(`Authorize 1 Kavach Shield for ${person.toUpperCase()} for date ${selectedDate}?`)) {
-                db._wallet[person].kavachSpent = (db._wallet[person].kavachSpent || 0) + 1;
-                const dayData = getDayData(selectedDate);
-                dayData[person].kavachUsed = true;
-                saveDB(db);
-                alert(`🛡️ Kavach applied successfully for ${person.toUpperCase()} on ${selectedDate}!`);
-            }
-        }
-
-        function buyKavach(person) {
-            if (!isEditor) {
-                alert("Please log in to Editor Mode.");
-                return;
-            }
-            const db = getDB();
-            if (!db._wallet) db._wallet = { anshu: { kavach: 3, coinsSpent: 0 }, aastha: { kavach: 4, coinsSpent: 0 } };
-
-            let netCoins = parseInt(document.getElementById(`${person}Coins`).innerText) || 0;
-            if (netCoins < 300) {
-                alert(`❌ Insufficient Sankalp Coins! You need 300 coins to buy 1 Kavach.`);
-                return;
-            }
-
-            if (confirm(`Spend 300 Sankalp Coins to purchase 1 Kavach Shield for ${person.toUpperCase()}?`)) {
-                db._wallet[person].coinsSpent = (db._wallet[person].coinsSpent || 0) + 300;
-                db._wallet[person].kavachBought = (db._wallet[person].kavachBought || 0) + 1;
-                saveDB(db);
-                alert(`🎉 1 Kavach Shield purchased successfully!`);
-            }
-        }
-
-        function toggleKavachHistoryModal() {
-            document.getElementById('kavachHistoryModal').classList.toggle('hidden');
-        }
-
-        function showKavachHistory(person) {
-            const db = getDB();
-            const sortedDates = Object.keys(db).filter(k => !k.startsWith('_')).sort();
-            
-            let transactions = [];
-
-            // 1. Initial Starting Balance (4 shields)
-            transactions.push({ type: 'credit', label: 'Starting Balance', desc: 'Initial complimentary allocation', amount: 4, date: 'Initial' });
-
-            // 2. Special Bonus (+1 shield awarded today)
-            transactions.push({ type: 'credit', label: 'Special Bonus', desc: 'Awarded +1 Kavach shield today', amount: 1, date: todayStr });
-
-            // 3. Monthly Free Drops
-            let uniqueMonths = new Set();
-            sortedDates.forEach(dStr => {
-                let parts = dStr.split('-');
-                if (parts.length === 3) uniqueMonths.add(`${parts[0]}-${parts[1]}`);
-            });
-            let nowParts = getLocalDateString().split('-');
-            uniqueMonths.add(`${nowParts[0]}-${nowParts[1]}`);
-            uniqueMonths.forEach(m => {
-                transactions.push({ type: 'credit', label: 'Monthly Free Drop', desc: `Automatic 1st of month allocation (${m})`, amount: 1, date: `${m}-01` });
-            });
-
-            // 4. Milestone Earned (+1 for every 2-day combined threshold)
-            let targetTotal2Days = person === 'anshu' ? 11.0 : 14.0;
-            for (let i = 0; i < sortedDates.length - 1; i++) {
-                let d1 = new Date(sortedDates[i]);
-                let d2 = new Date(sortedDates[i+1]);
-                let diffDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
-                if (diffDays === 1) {
-                    let day1Obj = db[sortedDates[i]][person] || { hours: 0 };
-                    let day2Obj = db[sortedDates[i+1]][person] || { hours: 0 };
-                    let h1 = day1Obj.hours || 0;
-                    let h2 = day2Obj.hours || 0;
-                    if ((h1 + h2) >= targetTotal2Days) {
-                        transactions.push({ type: 'credit', label: 'Milestone Reward', desc: `2-day total ≥ ${targetTotal2Days}h (${sortedDates[i]} & ${sortedDates[i+1]})`, amount: 1, date: sortedDates[i+1] });
-                        i++;
-                    }
-                }
-            }
-
-            // 5. Coin Purchases
-            let wallet = db._wallet || {};
-            let bought = (wallet[person] && wallet[person].kavachBought) || 0;
-            for (let b = 0; b < bought; b++) {
-                transactions.push({ type: 'credit', label: 'Coin Marketplace', desc: 'Purchased for 300 Sankalp Coins', amount: 1, date: 'Marketplace' });
-            }
-
-            // 6. Debits (Spent / Deployed)
-            sortedDates.forEach(dStr => {
-                if (db[dStr] && db[dStr][person] && db[dStr][person].kavachUsed) {
-                    transactions.push({ type: 'debit', label: 'Shield Deployed', desc: `Protected active streaks on ${dStr}`, amount: 1, date: dStr });
+                if (tierEl) {
+                    tierEl.innerText = tierName;
+                    tierEl.className = `text-[11px] font-extrabold px-2.5 py-0.5 rounded-md ${tierClass}`;
                 }
             });
+            saveDBQuiet(db);
+        }
 
-            const contentEl = document.getElementById('kavachHistoryContent');
-            document.getElementById('kavachHistoryTitle').innerText = `🛡️ ${person.toUpperCase()} — Kavach Shield Ledger (Credits & Debits)`;
-
-            if (transactions.length === 0) {
-                contentEl.innerHTML = `<p class="italic text-gray-500 py-3 text-center">No transaction records found.</p>`;
+        function saveDBQuiet(db) {
+            globalDB = db;
+            if (cloudMode) {
+                dbRef.set(db);
             } else {
-                contentEl.innerHTML = transactions.map(tx => {
-                    let isCredit = tx.type === 'credit';
-                    let badgeClass = isCredit ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-red-100 text-red-800 border-red-300';
-                    let sign = isCredit ? '+' : '-';
-                    return `
-                        <div class="p-2.5 rounded-xl border flex justify-between items-center ${isCredit ? 'bg-emerald-50/40 border-emerald-200' : 'bg-red-50/40 border-red-200'}">
-                            <div>
-                                <p class="font-bold text-slate-900 text-xs">${tx.label} <span class="text-[10px] text-slate-500 font-normal">(${tx.date})</span></p>
-                                <p class="text-[11px] text-slate-600">${tx.desc}</p>
-                            </div>
-                            <span class="font-black text-xs px-2 py-1 rounded-lg border ${badgeClass}">${sign}${tx.amount} Shield</span>
-                        </div>
-                    `;
-                }).join('');
+                localStorage.setItem('studyTrackerDB', JSON.stringify(db));
             }
-            document.getElementById('kavachHistoryModal').classList.remove('hidden');
+        }
+
+        function toggleCoinLedgerModal() {
+            document.getElementById('coinLedgerModal').classList.toggle('hidden');
+            document.getElementById('coinLedgerModal').classList.toggle('flex');
+        }
+
+        function showCoinLedger(person) {
+            const db = getDB();
+            const ledger = (db._coinLedger && db._coinLedger[person]) || [];
+            const contentEl = document.getElementById('coinLedgerContent');
+            document.getElementById('coinLedgerTitle').innerText = `🪙 ${person.toUpperCase()} — Coin Earnings Ledger`;
+
+            if (ledger.length === 0) {
+                contentEl.innerHTML = `<p class="italic text-slate-400 text-center py-4">No coin transactions recorded yet.</p>`;
+            } else {
+                contentEl.innerHTML = ledger.map(tx => `
+                    <div class="p-3 rounded-xl border bg-amber-50/40 border-amber-200 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-900 text-xs">${tx.desc}</p>
+                            <p class="text-[10px] text-slate-500">Date: ${tx.date}</p>
+                        </div>
+                        <span class="font-black text-xs px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300">+${tx.coins} Coins</span>
+                    </div>
+                `).join('');
+            }
+            toggleCoinLedgerModal();
         }
 
         function toggleEconomyModal() {
-            document.getElementById('economyModal').classList.toggle('hidden');
+            const modal = document.getElementById('economyModal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
         }
 
         let studyChart = null;
@@ -1368,7 +1032,9 @@
             let yMin = 0, yMax = 10, yStep = 1;
 
             if (view === 'weekly') {
-                let d = new Date();
+                let activeDateVal = document.getElementById('activeDate') ? document.getElementById('activeDate').value : getLocalDateString();
+                let d = new Date(activeDateVal + 'T00:00:00');
+                if (isNaN(d)) d = new Date();
                 let day = d.getDay();
                 let sunday = new Date(d);
                 sunday.setDate(d.getDate() - day);
@@ -1407,55 +1073,29 @@
                     aasthaTotal += aasthaSum;
                 }
                 yMin = 0; yMax = 250; yStep = 50;
-            } else if (view === 'quarterly') {
-                labels = ['Q1 (Jan-Mar)', 'Q2 (Apr-Jun)', 'Q3 (Jul-Sep)', 'Q4 (Oct-Dec)'];
-                let anshuQ = [0, 0, 0, 0];
-                let aasthaQ = [0, 0, 0, 0];
-
-                Object.keys(db).forEach(dateStr => {
-                    let dateObj = new Date(dateStr);
-                    if (!isNaN(dateObj)) {
-                        let month = dateObj.getMonth();
-                        let qIndex = Math.floor(month / 3);
-                        let entry = db[dateStr];
-                        if (entry.anshu) anshuQ[qIndex] += (entry.anshu.hours || 0);
-                        if (entry.aastha) aasthaQ[qIndex] += (entry.aastha.hours || 0);
-                    }
-                });
-
-                anshuData = anshuQ;
-                aasthaData = aasthaQ;
-                anshuTotal = anshuQ.reduce((a, b) => a + b, 0);
-                aasthaTotal = aasthaQ.reduce((a, b) => a + b, 0);
-                yMin = 300; yMax = 700; yStep = 50;
             } else if (view === 'yearly') {
-                let currentYear = new Date().getFullYear();
-                labels = [`${currentYear - 3}`, `${currentYear - 2}`, `${currentYear - 1}`, `${currentYear}`];
-                let anshuY = [0, 0, 0, 0];
-                let aasthaY = [0, 0, 0, 0];
-                let yearsArr = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear];
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                let anshuMonths = new Array(12).fill(0);
+                let aasthaMonths = new Array(12).fill(0);
 
                 Object.keys(db).forEach(dateStr => {
-                    let dateObj = new Date(dateStr);
-                    if (!isNaN(dateObj)) {
-                        let yr = dateObj.getFullYear();
-                        let yrIndex = yearsArr.indexOf(yr);
-                        if (yrIndex !== -1) {
-                            let entry = db[dateStr];
-                            if (entry.anshu) anshuY[yrIndex] += (entry.anshu.hours || 0);
-                            if (entry.aastha) aasthaY[yrIndex] += (entry.aastha.hours || 0);
-                        }
+                    let dt = new Date(dateStr);
+                    if (!isNaN(dt)) {
+                        let mo = dt.getMonth();
+                        let entry = db[dateStr];
+                        if (entry.anshu) anshuMonths[mo] += (entry.anshu.hours || 0);
+                        if (entry.aastha) aasthaMonths[mo] += (entry.aastha.hours || 0);
                     }
                 });
 
-                anshuData = anshuY;
-                aasthaData = aasthaY;
-                anshuTotal = anshuY.reduce((a, b) => a + b, 0);
-                aasthaTotal = aasthaY.reduce((a, b) => a + b, 0);
-                yMin = 1000; yMax = 2600; yStep = 300;
+                anshuData = anshuMonths;
+                aasthaData = aasthaMonths;
+                anshuTotal = anshuMonths.reduce((a, b) => a + b, 0);
+                aasthaTotal = aasthaMonths.reduce((a, b) => a + b, 0);
+                yMin = 0; yMax = 200; yStep = 25;
             }
 
-            document.getElementById('graphTotals').innerText = `Total — Anshu: ${anshuTotal} hrs | Aastha: ${aasthaTotal} hrs`;
+            document.getElementById('graphTotals').innerText = `Total — Anshu: ${formatHoursMinutes(anshuTotal)} | Aastha: ${formatHoursMinutes(aasthaTotal)}`;
 
             const anshuGradient = ctx.createLinearGradient(0, 0, 0, 300);
             anshuGradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
@@ -1525,7 +1165,7 @@
 
             let weeklyHeaderHtml = `<th class="border border-amber-300 p-2 text-left">Aspirant</th>`;
             let weeklyDates = [];
-            for (let i = 6; i >= 0; i--) {
+            for (let i = 0; i <= 6; i++) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
                 const dStr = getLocalDateString(d);
@@ -1554,7 +1194,7 @@
 
             let monthlyHeaderHtml = `<th class="border border-amber-300 p-2 text-left">Aspirant</th>`;
             let ranges = [];
-            for (let w = 3; w >= 0; w--) {
+            for (let w = 0; w <= 3; w++) {
                 const start = new Date();
                 start.setDate(start.getDate() - (w * 7 + 6));
                 const end = new Date();
@@ -1706,6 +1346,55 @@
                 link.click();
             });
         }
+
+        function exportJSONBackup() {
+            const db = getDB();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `study_tracker_backup_${getLocalDateString()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            alert("💾 Backup exported successfully!");
+        }
+
+        function importJSONBackup(event) {
+            if (!isEditor) {
+                alert("❌ Please unlock Editor Mode first using 'Editor Login'.");
+                event.target.value = '';
+                return;
+            }
+            const fileReader = new FileReader();
+            if (event.target.files[0]) {
+                fileReader.readAsText(event.target.files[0], "UTF-8");
+                fileReader.onload = function(e) {
+                    try {
+                        const importedDb = JSON.parse(e.target.result);
+                        if (confirm("⚠️ Importing this backup will merge or replace your current data. Proceed?")) {
+                            saveDB(importedDb);
+                            alert("📂 Data imported successfully!");
+                        }
+                    } catch (error) {
+                        alert("❌ Invalid JSON backup file.");
+                    }
+                    event.target.value = '';
+                };
+            }
+        }
     </script>
+
+    <!-- COIN LEDGER MODAL -->
+    <div id="coinLedgerModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-amber-200 space-y-4 max-h-[85vh] overflow-y-auto">
+            <h3 id="coinLedgerTitle" class="font-extrabold text-amber-900 text-lg flex items-center gap-2">
+                🪙 Coin Earnings Ledger
+            </h3>
+            <div id="coinLedgerContent" class="space-y-2 text-xs text-slate-700 max-h-96 overflow-y-auto"></div>
+            <div class="text-right pt-2">
+                <button onclick="toggleCoinLedgerModal()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs shadow">Close</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
