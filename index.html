@@ -416,86 +416,58 @@
         }
 
         function getDB() {
-            if (cloudMode) return globalDB;
             const data = localStorage.getItem('studyTrackerDB');
             if (data) {
-                return JSON.parse(data);
-            } else {
-                const initialDB = {
-                    "2026-09-22": {
-                        anshu: {
-                            hours: 4.32,
-                            topics: [
-                                { name: "Sociology - Class 15 Lecture", status: "Completed" },
-                                { name: "USA Iran Conflict CA", status: "Completed" },
-                                { name: "Supreme Court - PYQ + Flashcard", status: "Completed" },
-                                { name: "Judicial Review", status: "Completed" }
-                            ]
-                        },
-                        aastha: {
-                            hours: 6.25,
-                            topics: [
-                                { name: "Sociology lecture", status: "Completed" },
-                                { name: "Mathematics lecture+practice", status: "Completed" },
-                                { name: "English grammar revision", status: "Pending" },
-                                { name: "History early medieval", status: "Completed" }
-                            ]
-                        }
-                    }
-                };
-                localStorage.setItem('studyTrackerDB', JSON.stringify(initialDB));
-                return initialDB;
+                try {
+                    return JSON.parse(data);
+                } catch(e) {}
             }
+            return cloudMode ? (globalDB && Object.keys(globalDB).length > 0 ? globalDB : {}) : {};
         }
 
         function saveDB(db) {
             globalDB = db;
-            if (cloudMode) {
-                dbRef.set(db);
-            } else {
-                localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+            localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+            if (cloudMode && dbRef) {
+                dbRef.set(db).catch(err => console.log("Cloud sync deferred:", err));
             }
             refreshUI();
         }
 
         if (cloudMode) {
             dbRef.on('value', (snapshot) => {
-                globalDB = snapshot.val() || {};
-                refreshUI();
+                const cloudVal = snapshot.val();
+                if (cloudVal && Object.keys(cloudVal).length > 0) {
+                    globalDB = cloudVal;
+                    localStorage.setItem('studyTrackerDB', JSON.stringify(cloudVal));
+                    refreshUI();
+                }
             });
-        } else {
-            globalDB = getDB();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
             if (!cloudMode) {
-                let db = getDB();
-                if (!db["2026-09-22"]) db["2026-09-22"] = {};
-                if (!db["2026-09-22"].anshu || !db["2026-09-22"].anshu.topics || db["2026-09-22"].anshu.topics.length === 0) {
-                    db["2026-09-22"].anshu = {
-                        hours: 4.32,
-                        topics: [
-                            { name: "Sociology - Class 15 Lecture", status: "Completed" },
-                            { name: "USA Iran Conflict CA", status: "Completed" },
-                            { name: "Supreme Court - PYQ + Flashcard", status: "Completed" },
-                            { name: "Judicial Review", status: "Completed" }
-                        ]
-                    };
-                    db["2026-09-22"].aastha = {
-                        hours: 6.25,
-                        topics: [
-                            { name: "Sociology lecture", status: "Completed" },
-                            { name: "Mathematics lecture+practice", status: "Completed" },
-                            { name: "English grammar revision", status: "Pending" },
-                            { name: "History early medieval", status: "Completed" }
-                        ]
-                    };
-                    localStorage.setItem('studyTrackerDB', JSON.stringify(db));
-                }
-                globalDB = db;
+                globalDB = getDB();
             }
             loadDayUI();
         });
+
+        function checkEditorAccess() {
+            if (!isEditor) {
+                const pin = prompt("🔒 Editor Mode is locked. Enter Passcode to unlock editing (1234):");
+                if (pin === DEFAULT_PIN) {
+                    isEditor = true;
+                    updateAuthUI();
+                    changeActiveDate();
+                    return true;
+                } else {
+                    alert("❌ Incorrect Passcode.");
+                    return false;
+                }
+            }
+            return true;
+        }
 
         function toggleEditorAuth() {
             if (isEditor) {
@@ -544,9 +516,7 @@
         yesterdayObj.setDate(yesterdayObj.getDate() - 1);
         const yesterdayStr = getLocalDateString(yesterdayObj);
 
-        let initialDb = getDB();
-        let sortedDatesInit = Object.keys(initialDb).filter(k => !k.startsWith('_')).sort();
-        let defaultDate = sortedDatesInit.length > 0 ? sortedDatesInit[sortedDatesInit.length - 1] : todayStr;
+        let defaultDate = todayStr;
 
         document.getElementById('activeDate').value = defaultDate;
         document.getElementById('summaryCardDate').value = todayStr;
@@ -691,8 +661,12 @@
         }
 
         function addTopic(person) {
+            if (!checkEditorAccess()) return;
             const selectedDate = document.getElementById('activeDate').value;
-            if (!isEditor || (selectedDate !== todayStr && selectedDate !== yesterdayStr)) return;
+            if (selectedDate !== todayStr && selectedDate !== yesterdayStr) {
+                alert("❌ You can only add topics for Today or Yesterday.");
+                return;
+            }
 
             const input = document.getElementById(person + 'Input');
             const val = input.value.trim();
@@ -709,8 +683,12 @@
         }
 
         function updateStatus(person, index, status) {
+            if (!checkEditorAccess()) return;
             const selectedDate = document.getElementById('activeDate').value;
-            if (!isEditor || (selectedDate !== todayStr && selectedDate !== yesterdayStr)) return;
+            if (selectedDate !== todayStr && selectedDate !== yesterdayStr) {
+                alert("❌ You can only update topic status for Today or Yesterday.");
+                return;
+            }
 
             const db = getDB();
             if (db[selectedDate] && db[selectedDate][person] && db[selectedDate][person].topics) {
@@ -720,8 +698,13 @@
         }
 
         function updateStudyHours(person) {
+            if (!checkEditorAccess()) return;
             const selectedDate = document.getElementById('activeDate').value;
-            if (!isEditor || (selectedDate !== todayStr && selectedDate !== yesterdayStr)) return;
+            if (selectedDate !== todayStr && selectedDate !== yesterdayStr) {
+                alert("❌ You can only edit study hours for Today or Yesterday.");
+                loadDayUI();
+                return;
+            }
 
             const h = parseInt(document.getElementById(person + 'H').value) || 0;
             const m = parseInt(document.getElementById(person + 'M').value) || 0;
@@ -732,7 +715,11 @@
             if (!db[selectedDate][person]) db[selectedDate][person] = { hours: 0, topics: [] };
             
             db[selectedDate][person].hours = totalVal;
-            saveDB(db);
+            saveDBQuiet(db);
+            calculateAndRenderEconomy();
+            renderGraph();
+            renderHistoricalTables();
+            updateSummaryCardPreview();
         }
 
         // ==========================================
@@ -976,10 +963,9 @@
 
         function saveDBQuiet(db) {
             globalDB = db;
-            if (cloudMode) {
-                dbRef.set(db);
-            } else {
-                localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+            localStorage.setItem('studyTrackerDB', JSON.stringify(db));
+            if (cloudMode && dbRef) {
+                dbRef.set(db).catch(err => console.log("Cloud sync deferred:", err));
             }
         }
 
